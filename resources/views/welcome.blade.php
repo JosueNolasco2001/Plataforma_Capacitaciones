@@ -109,7 +109,7 @@
                     <!-- Main Title - Responsive text sizes -->
                     <div class="animate-reveal [animation-delay:0.4s]">
                         <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold">
-                            <span class="inline-block bg-gradient-to-r from-violet-300 via-cyan-300 to-violet-300 bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent">Senacit</span>
+                            <span class="inline-block bg-gradient-to-r from-violet-300 via-cyan-300 to-violet-300 bg-[length:200%_auto] animate-gradient bg-clip-text text-transparent">SENACIT</span>
                             <span class="block mt-2 text-white">Plataforma de capacitaciones</span>
                         </h1>
                     </div>
@@ -135,9 +135,9 @@
                         </button>
 
                         <!-- Secondary Button - Full width on mobile -->
-                        <button class="w-full sm:w-auto px-6 py-3 rounded-lg border border-white/10 bg-white/5 backdrop-blur-lg text-white/70 hover:bg-white/10 hover:text-white transition-all min-w-[160px]">
+                        <a  href="/cursos" class="w-full sm:w-auto px-6 py-3 rounded-lg border border-white/10 bg-white/5 backdrop-blur-lg text-white/70 hover:bg-white/10 hover:text-white transition-all min-w-[160px]">
                             Ver nuestros cursos
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -175,9 +175,9 @@
 
         <!-- Imagen superpuesta (robot) -->
         <div class="absolute inset-0 flex items-center justify-center z-10 mix-blend-lighten opacity-80 hover:opacity-100 transition-opacity duration-300">
-            <img src="img/senacit_logo2.png" 
+            <img src="img/robot-with-wrench2.png" 
                  alt="Robot" 
-                 class="w-1/2 h-1/2 object-contain animate-float"
+                 class=" object-contain animate-float w-full"
                  loading="lazy">
         </div>
     </div>
