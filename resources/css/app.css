@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+    .animate-once {
+      animation-iteration-count: 1;
+    }
+    
+    /* Opcional: Para mantener el estado final de la animación */
+    .animate-hold {
+      animation-fill-mode: forwards;
+    }
+  }
 [x-cloak] {
     display: none;
 }
