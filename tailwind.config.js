@@ -12,6 +12,7 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.js', // importante si usás JS para Observer
+        './node_modules/flowbite/**/*.js' // ← importante
     ],
 
     theme: {
@@ -22,5 +23,5 @@ export default {
         },
     },
 
-    plugins: [forms, typography, motion, intersect],
+    plugins: [forms, typography, motion, intersect,require('flowbite/plugin')],
 };

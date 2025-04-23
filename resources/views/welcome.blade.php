@@ -66,6 +66,7 @@
                             <a  href="{{ url('/cursos') }}" class="w-full sm:w-auto px-6 py-3 rounded-lg border border-white/10 bg-white/5 backdrop-blur-lg text-white/70 hover:bg-white/10 hover:text-white transition-all min-w-[160px]">
                                 Ver nuestros cursos
                             </a>
+                            
                         </div>
                     </div>
     
