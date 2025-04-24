@@ -9,9 +9,9 @@
                 
                         <div class="rounded overflow-hidden shadow-lg">
                 
-                            <a href="#"></a>
+                         
                             <div class="relative">
-                                <a href="#">
+                                <a href="{{ route('curso.videos') }}">
                                     <img class="w-full"
                                         src="https://images.pexels.com/photos/257816/pexels-photo-257816.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=1&amp;w=500"
                                         alt="Sunset in the mountains">

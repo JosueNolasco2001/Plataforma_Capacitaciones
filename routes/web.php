@@ -9,6 +9,10 @@ Route::get('/cursos', function () {
     return view('cursos');
 });
 
+Route::get('/curso/videos', function () {
+    return view('curso-x-videos');
+})->name('curso.videos');
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

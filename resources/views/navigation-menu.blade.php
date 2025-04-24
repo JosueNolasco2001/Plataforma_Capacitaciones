@@ -142,7 +142,7 @@
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
     <a href="https://flowbite.com/" class="flex items-center space-x-3 rtl:space-x-reverse">
         <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" />
-        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
+        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SENACIT</span>
     </a>
     <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
         <div class=" sm:flex sm:items-center sm:ms-6">
@@ -205,12 +205,28 @@
                     <img class="size-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
                 </button>
             @else
-                <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-                    {{ Auth::user()->name }}
-                    <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                    </svg>
-                </button>
+
+        
+            <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" 
+            class="group relative w-full sm:w-auto px-5 py-2.5 min-w-[160px] 
+                   font-medium rounded-lg text-sm text-center inline-flex items-center 
+                   focus:outline-none focus:ring-4 focus:ring-cyan-600/30" 
+            type="button">
+        <!-- Gradiente base -->
+        <div class="absolute inset-0 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-lg"></div>
+        <!-- Efecto blur hover -->
+        <div class="absolute inset-0 bg-gradient-to-r from-violet-600 to-cyan-600 
+                    rounded-lg blur-lg group-hover:opacity-60 transition-opacity 
+                    duration-500"></div>
+        
+        <!-- Contenido del botón -->
+        <div class="relative flex items-center gap-2 text-white">
+            {{ Auth::user()->name }}
+            <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+            </svg>
+        </div>
+    </button>
             @endif
             
             <!-- Dropdown menu -->

@@ -7,7 +7,7 @@
 
             <a href="#"></a>
             <div class="relative">
-                <a href="#">
+                <a href="">
                     <img class="w-full"
                         src="https://images.pexels.com/photos/257816/pexels-photo-257816.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=1&amp;w=500"
                         alt="Sunset in the mountains">
@@ -247,19 +247,3 @@
 </div>
 </x-guest-layout>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('motion-preset-slide-left');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, {threshold: 0.1});
-  
-    document.querySelectorAll('.animate-once').forEach(el => {
-      observer.observe(el);
-    });
-  });
-  </script>
