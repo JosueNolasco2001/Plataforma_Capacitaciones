@@ -12,6 +12,9 @@ Route::get('/cursos', function () {
 Route::get('/curso/videos', function () {
     return view('curso-x-videos');
 })->name('curso.videos');
+Route::get('/curso/x/videos/x', function () {
+    return view('curso-x-videos-x');
+})->name('curso.videos.x');
 
 Route::middleware([
     'auth:sanctum',
