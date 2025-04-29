@@ -1,4 +1,6 @@
-
+<!-- Incluye Plyr.js -->
+<link href="https://cdn.jsdelivr.net/npm/plyr@3.6.2/dist/plyr.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/plyr@3.6.2/dist/plyr.js"></script>
 
 
 
@@ -12,26 +14,19 @@
 <h1 class="text-4xl md:text-5xl font-bold mb-2 animate-title-pop">
     Domina Arduino desde Cero
 </h1>
-<p class="text-xl md:text-2xl font-light opacity-90 animate-subtitle-slide">
-    Impartido por <span class="font-semibold text-yellow-300 drop-shadow-sm">Josue Nolasco</span> | Especialista en Robótica
-</p>
+
 </div>
 
+<center><p class=" mt-8 text-xl md:text-2xl font-light opacity-90 animate-subtitle-slide text-white">
+    VIDEO 1: <span class="font-semibold text-yellow-300 drop-shadow-sm">CONCEPTOS BASICOS DE ROBOTICA</span> 
+</p></center>
+  
 
-    <div class="flex justify-between mt-3 ">
-        <span class="text-base font-medium text-blue-700 dark:text-white">Transcurso</span>
-        <span class="text-sm font-medium text-blue-700 dark:text-white">45%</span>
-      </div>
-      <div class="w-full bg-gray-200 rounded-full mb-10 h-2.5 dark:bg-gray-700">
-        <div class="bg-blue-600 h-2.5 rounded-full" style="width: 45%"></div>
-      </div>
+  <video  controls>
+    <source src="{{ route('videos.show', ['filename' => 'Pouya.mp4']) }}" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 
-        <video class="w-full" autoplay muted controls>
-            <source src="/docs/videos/flowbite.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-
-      
       
 <form class="mt-10">
     <div class="w-full mb-4   rounded-lg  dark:bg-[rgba(17,24,39,0.4)]">
@@ -269,5 +264,3 @@
   
   
   </x-app-layout>
-  
-  

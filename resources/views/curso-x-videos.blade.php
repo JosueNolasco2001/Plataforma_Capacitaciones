@@ -17,25 +17,38 @@
     Impartido por <span class="font-semibold text-yellow-300 drop-shadow-sm">Josue Nolasco</span> | Especialista en Robótica
 </p>
 </div>
-<div class="flex justify-between mt-3 ">
-    <span class="text-base font-medium text-blue-700 dark:text-white">Transcurso</span>
-    <span class="text-sm font-medium text-blue-700 dark:text-white">45%</span>
-  </div>
-  <div class="w-full bg-gray-200 rounded-full mb-10 h-2.5 dark:bg-gray-700">
-    <div class="bg-blue-600 h-2.5 rounded-full" style="width: 45%"></div>
-  </div>
+
   
   <p class="text-sm text-white p-4">
     Bienvenido al universo de la robótica, donde la creatividad y la tecnología convergen. Este curso te guiará desde los fundamentos esenciales hasta la construcción y programación de tus propios robots.
 
     Transformaremos juntos tu interacción con la tecnología.
   </p>
-
+  <div class="flex justify-between mt-3">
+    <span class="text-base font-medium text-blue-700 dark:text-white">Transcurso</span>
+    <span class="text-sm font-medium text-blue-700 dark:text-white">45%</span>
+  </div>
+  <div class="w-full bg-gray-200 rounded-full mb-10 h-2.5 dark:bg-gray-700">
+    <div 
+      class="bg-blue-600 h-2.5 rounded-full animate-progress"
+      style="--target-width: 45%"
+    ></div>
+  </div>
+  
+  <style>
+    @keyframes progress {
+      from { width: 0%; }
+      to { width: var(--target-width); }
+    }
+    .animate-progress {
+      animation: progress 1.5s ease-out forwards;
+    }
+  </style>
   
 
       <div class="grid grid-cols-1  sm:grid-cols-3 gap-2">
    
-        <a href="#" class="group relative block bg-black rounded-lg overflow-hidden">
+        <a href="{{ route('curso.videos.x') }}" class="group relative block bg-black rounded-lg overflow-hidden">
             <img
               alt=""
               src="https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
@@ -43,9 +56,9 @@
             />
           
             <div class="relative p-4 sm:p-6 lg:p-8">
-              <p class="text-sm font-medium tracking-widest text-pink-500 uppercase">Developer</p>
+              <p class="text-sm font-medium tracking-widest text-pink-500 uppercase">VIDEO 1</p>
           
-              <p class="text-xl font-bold text-white sm:text-2xl">Abdul Baset</p>
+              <p class="text-xl font-bold text-white sm:text-2xl">CONCEPTOS BASICOS DE ROBOTICA</p>
           
               <div class="mt-32 sm:mt-48 lg:mt-64">
                 <div
