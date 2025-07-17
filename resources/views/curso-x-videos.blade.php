@@ -7,7 +7,7 @@
   
     <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 motion-preset-slide-right ">
        
-        <div class="curso-header text-center py-8 text-white px-4 rounded-lg shadow-lg 
+        <div class="  curso-header text-center py-8 text-white px-4 rounded-lg shadow-lg 
         animate-gradient-intense bg-[length:400%_400%] 
         bg-gradient-to-r from-blue-500 via-purple-500 to-pink-600">
 <h1 class="text-4xl md:text-5xl font-bold mb-2 animate-title-pop">
@@ -28,12 +28,31 @@
     <span class="text-base font-medium text-blue-700 dark:text-white">Transcurso</span>
     <span class="text-sm font-medium text-blue-700 dark:text-white">45%</span>
   </div>
+
   <div class="w-full bg-gray-200 rounded-full mb-10 h-2.5 dark:bg-gray-700">
     <div 
       class="bg-blue-600 h-2.5 rounded-full animate-progress"
       style="--target-width: 45%"
     ></div>
   </div>
+    <!-- Botón de Suscribirse al Curso -->
+<div class="flex justify-center mb-8">
+    <button class="group relative px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-500/50">
+        <!-- Efecto de brillo en hover -->
+        <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+        
+        <!-- Contenido del botón -->
+        <div class="relative flex items-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            <span>Suscribirse al Curso</span>
+            <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+        </div>
+        
+     
+    </button>
+</div>
   
   <style>
     @keyframes progress {

@@ -7,8 +7,10 @@
 
 <x-app-layout>
   
-    <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 motion-preset-slide-right ">
-        <div class="curso-header text-center py-8 text-white px-4 rounded-lg shadow-lg 
+ 
+   <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 motion-preset-slide-right">
+
+        <div class="  curso-header text-center py-8 text-white px-4 rounded-lg shadow-lg 
         animate-gradient-intense bg-[length:400%_400%] 
         bg-gradient-to-r from-blue-500 via-purple-500 to-pink-600">
 <h1 class="text-4xl md:text-5xl font-bold mb-2 animate-title-pop">
@@ -22,11 +24,17 @@
 </p></center>
   
 
-  <video  controls>
-    <source src="{{ route('videos.show', ['filename' => 'Pouya.mp4']) }}" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+ 
+ <center>
+       <video class="rounded-lg" controls>
+      <source
+        src="{{ route('videos.show', ['filename' => 'mrRanger.mp4']) }}" type="video/mp4"
+        type="video/mp4"
+      />
+      Your browser does not support the video tag.
+    </video>
 
+ </center>
       
 <form class="mt-10">
     <div class="w-full mb-4   rounded-lg  dark:bg-[rgba(17,24,39,0.4)]">
@@ -261,6 +269,7 @@
         </div>
     </article>
   </div>
+
   
   
   </x-app-layout>
