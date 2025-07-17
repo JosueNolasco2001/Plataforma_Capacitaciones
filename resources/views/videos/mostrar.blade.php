@@ -451,24 +451,27 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // DEBUG: Verificar estado del video
+      
 document.addEventListener('DOMContentLoaded', function() {
     const videoPlayer = document.getElementById('videoPlayer');
     
-    console.log('Video element encontrado:', videoPlayer);
-    
-    videoPlayer.addEventListener('loadstart', () => console.log('Empezando a cargar video'));
-    videoPlayer.addEventListener('loadeddata', () => console.log('Video cargado, duración:', videoPlayer.duration));
-    videoPlayer.addEventListener('canplay', () => console.log('Video listo para reproducir'));
-    videoPlayer.addEventListener('seeking', () => console.log('Buscando posición:', videoPlayer.currentTime));
-    videoPlayer.addEventListener('seeked', () => console.log('Posición encontrada:', videoPlayer.currentTime));
-    videoPlayer.addEventListener('error', (e) => console.log('Error en video:', e));
-    
-    // Verificar si se puede hacer seeking
-    videoPlayer.addEventListener('loadedmetadata', function() {
-        console.log('¿Seekable?', this.seekable.length > 0);
-        console.log('Controles habilitados?', this.controls);
+    // Detectar si algo está interfiriendo
+    videoPlayer.addEventListener('seeking', function() {
+        console.log('🔍 SEEKING iniciado - Tiempo objetivo:', this.currentTime);
     });
-});
+    
+    videoPlayer.addEventListener('seeked', function() {
+        console.log('✅ SEEKING completado - Tiempo actual:', this.currentTime);
+    });
+    
+    // Detectar si algo cambia el currentTime
+    let lastTime = 0;
+    videoPlayer.addEventListener('timeupdate', function() {
+        if (Math.abs(this.currentTime - lastTime) > 5) {
+            console.log('⚠️ SALTO DETECTADO de', lastTime, 'a', this.currentTime);
+        }
+        lastTime = this.currentTime;
+    });
+});  
     </script>
 </x-app-layout>

@@ -19,25 +19,25 @@
         </p>
 
         @if($estaInscrito)
-            <!-- Estadísticas del progreso -->
-            <div class="flex justify-center mb-4">
-                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg">
-                    <div class="flex items-center space-x-6">
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-600">{{ $videosCompletados }}</div>
-                            <div class="text-sm text-gray-500">Videos Vistos</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-gray-600">{{ $totalVideos }}</div>
-                            <div class="text-sm text-gray-500">Total Videos</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-green-600">{{ $porcentajeProgreso }}%</div>
-                            <div class="text-sm text-gray-500">Completado</div>
-                        </div>
-                    </div>
-                </div>
+          <!-- Estadísticas del progreso -->
+<div class="flex justify-center mb-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+        <div class="flex items-center space-x-12">
+            <div class="text-center px-4">
+                <div class="text-2xl font-bold text-blue-600 mb-2">{{ $videosCompletados }}</div>
+                <div class="text-sm text-gray-500 whitespace-nowrap">Videos Vistos</div>
             </div>
+            <div class="text-center px-4">
+                <div class="text-2xl font-bold text-gray-600 mb-2">{{ $totalVideos }}</div>
+                <div class="text-sm text-gray-500 whitespace-nowrap">Total Videos</div>
+            </div>
+            <div class="text-center px-4">
+                <div class="text-2xl font-bold text-green-600 mb-2">{{ $porcentajeProgreso }}%</div>
+                <div class="text-sm text-gray-500 whitespace-nowrap">Completado</div>
+            </div>
+        </div>
+    </div>
+</div>
 
             <!-- Barra de progreso -->
             <div class="flex justify-between mt-3">
@@ -54,72 +54,70 @@
 
             <!-- Grid de videos -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                @forelse($videos as $video)
-                    <a href="{{ route('video.mostrar', $video->id) }}" 
-                       class="group relative block bg-black rounded-lg overflow-hidden 
-                              {{ $video->completado ? 'ring-2 ring-green-500 ring-opacity-75' : '' }}
-                              hover:transform hover:scale-105 transition-all duration-300">
-                        
-                        <!-- Imagen del video -->
-                        <img
-                            alt="{{ $video->titulo }}"
-                            src="https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                            class="absolute inset-0 h-full w-full rounded-lg object-cover 
-                                   {{ $video->completado ? 'opacity-90' : 'opacity-75' }} 
-                                   transition-opacity group-hover:opacity-50"
-                        />
-                        
-                        <!-- Overlay de video completado -->
-                        @if($video->completado)
-                            <div class="absolute inset-0 bg-green-500 bg-opacity-20 rounded-lg"></div>
-                            <div class="absolute top-2 right-2 bg-green-500 text-white p-2 rounded-full shadow-lg">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                            <div class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                                VISTO
-                            </div>
-                        @else
-                            <!-- Indicador de video no visto -->
-                            <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
-                                PENDIENTE
-                            </div>
-                        @endif
+               @forelse($videos as $video)
+    <a href="{{ route('video.mostrar', $video->id) }}" 
+       class="group relative block bg-black rounded-lg overflow-hidden 
+          
+              ">
+        
+        <!-- Imagen del video -->
+     <img
+    alt="{{ $video->titulo }}"
+    src="https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+    class="absolute inset-0 h-full w-full rounded-lg object-cover 
+           {{ $video->completado ? 'opacity-50' : 'opacity-75 group-hover:opacity-50' }} 
+           transition-opacity"
+/>
+        
+        <!-- Overlay de video completado - mismo que el hover -->
+        @if($video->completado)
+            <div class="absolute inset-0 bg-gray-900 opacity-50 rounded-lg"></div>
+            <div class="absolute top-2 right-2 bg-green-500 text-white p-2 rounded-full shadow-lg">
+             
+            </div>
+            <div class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                VISTO
+            </div>
+        @else
+            <!-- Indicador de video no visto -->
+            <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
+                PENDIENTE
+            </div>
+        @endif
 
-                        <!-- Play button overlay -->
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <div class="bg-white bg-opacity-90 rounded-full p-4">
-                                <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    
-                        <div class="relative p-4 sm:p-6 lg:p-8">
-                            <p class="text-sm font-medium tracking-widest text-pink-500 uppercase">
-                                VIDEO {{ $video->orden }}
-                            </p>
-                    
-                            <p class="text-xl font-bold text-white sm:text-2xl">
-                                {{ $video->titulo }}
-                            </p>
-                    
-                            <div class="mt-32 sm:mt-48 lg:mt-64">
-                                <div class="translate-y-8 transform opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
-                                    <p class="text-sm text-white">
-                                        @if($video->duracion)
-                                            Duración: {{ $video->duracion }} min
-                                        @endif
-                                        @if($video->completado && $video->ultima_vista)
-                                            <br><span class="text-green-300">Visto: {{ \Carbon\Carbon::parse($video->ultima_vista)->format('d/m/Y') }}</span>
-                                        @endif
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                @empty
+        <!-- Play button overlay -->
+        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div class="bg-white bg-opacity-90 rounded-full p-4">
+                <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+        </div>
+    
+        <div class="relative p-4 sm:p-6 lg:p-8 mt-3">
+            <p class="text-sm font-medium tracking-widest text-pink-500 uppercase">
+                VIDEO {{ $video->orden }}
+            </p>
+    
+            <p class="text-xl font-bold text-white sm:text-2xl">
+                {{ $video->titulo }}
+            </p>
+    
+            <div class="mt-32 sm:mt-48 lg:mt-64">
+                <div class="translate-y-8 transform opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
+                    <p class="text-sm text-white">
+                        @if($video->duracion)
+                            Duración: {{ $video->duracion }} min
+                        @endif
+                        @if($video->completado && $video->ultima_vista)
+                            <br><span class="text-green-300">Visto: {{ \Carbon\Carbon::parse($video->ultima_vista)->format('d/m/Y') }}</span>
+                        @endif
+                    </p>
+                </div>
+            </div>
+        </div>
+    </a>
+@empty
                     <div class="col-span-full text-center py-8">
                         <p class="text-gray-500">No hay videos disponibles para este curso</p>
                     </div>

@@ -55,6 +55,86 @@ class CursoNoInscritoController extends Controller
         return back()->with('error', 'Error al cargar cursos disponibles');
     }
 }
+
+// Cursos EN PROGRESO (inscritos pero no completados al 100%)
+public function misCursos()
+{
+    $usuarioId = Auth::id();
+    
+    if (!$usuarioId) {
+        return redirect()->route('login');
+    }
+
+    try {
+        $cursos = DB::select("
+            SELECT c.*,
+                   (SELECT COUNT(*) FROM videos WHERE curso_id = c.id) as videos_count,
+                   (SELECT COUNT(*) FROM comentarios co JOIN videos v ON co.video_id = v.id WHERE v.curso_id = c.id) as comentarios_count,
+                   u.name as instructor_nombre,
+                   (SELECT COUNT(*) FROM videos v 
+                    JOIN progreso p ON v.id = p.video_id 
+                    WHERE v.curso_id = c.id AND p.usuario_id = ? AND p.completado = 1) as videos_completados,
+                   CASE 
+                       WHEN (SELECT COUNT(*) FROM videos WHERE curso_id = c.id) = 0 THEN 0
+                       ELSE ROUND(
+                           (SELECT COUNT(*) FROM videos v 
+                            JOIN progreso p ON v.id = p.video_id 
+                            WHERE v.curso_id = c.id AND p.usuario_id = ? AND p.completado = 1) 
+                           * 100.0 / 
+                           (SELECT COUNT(*) FROM videos WHERE curso_id = c.id), 0
+                       )
+                   END as porcentaje_progreso
+            FROM cursos c
+            JOIN users u ON c.instructor_id = u.id
+            JOIN inscripciones i ON c.id = i.curso_id
+            WHERE i.usuario_id = ?
+            HAVING porcentaje_progreso < 100
+            ORDER BY i.fecha_inscripcion DESC
+        ", [$usuarioId, $usuarioId, $usuarioId]);
+
+        return view('cursos.mis-cursos', compact('cursos'));
+        
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error al cargar mis cursos');
+    }
+}
+
+// Cursos COMPLETADOS (100% de videos vistos)
+public function cursosCompletados()
+{
+    $usuarioId = Auth::id();
+    
+    if (!$usuarioId) {
+        return redirect()->route('login');
+    }
+
+    try {
+        $cursos = DB::select("
+            SELECT c.*,
+                   (SELECT COUNT(*) FROM videos WHERE curso_id = c.id) as videos_count,
+                   (SELECT COUNT(*) FROM comentarios co JOIN videos v ON co.video_id = v.id WHERE v.curso_id = c.id) as comentarios_count,
+                   u.name as instructor_nombre,
+                   (SELECT COUNT(*) FROM videos v 
+                    JOIN progreso p ON v.id = p.video_id 
+                    WHERE v.curso_id = c.id AND p.usuario_id = ? AND p.completado = 1) as videos_completados,
+                   100 as porcentaje_progreso,
+                   (SELECT MAX(p.ultima_vista) FROM videos v 
+                    JOIN progreso p ON v.id = p.video_id 
+                    WHERE v.curso_id = c.id AND p.usuario_id = ?) as fecha_completado
+            FROM cursos c
+            JOIN users u ON c.instructor_id = u.id
+            JOIN inscripciones i ON c.id = i.curso_id
+            WHERE i.usuario_id = ?
+            HAVING videos_completados = videos_count AND videos_count > 0
+            ORDER BY fecha_completado DESC
+        ", [$usuarioId, $usuarioId, $usuarioId]);
+
+        return view('cursos.completados', compact('cursos'));
+        
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error al cargar cursos completados');
+    }
+}
     public function index()
     {
         $usuarioId = Auth::id();

@@ -39,6 +39,8 @@ Route::post('/curso/{id}/suscribirse', [CursoNoInscritoController::class, 'suscr
 
     Route::post('/video/{id}/marcar-visto', [VideoController::class, 'marcarComoVisto'])->name('video.marcar-visto');
 
+Route::get('/mis-cursos', [CursoNoInscritoController::class, 'misCursos'])->name('cursos.mis-cursos');
+Route::get('/cursos-completados', [CursoNoInscritoController::class, 'cursosCompletados'])->name('cursos.completados');
 
 
 Route::middleware([

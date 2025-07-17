@@ -31,13 +31,13 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" 
+                    <a href="{{ route('cursos.mis-cursos') }}" 
                        class="py-2 px-3 text-gray-700 hover:text-blue-700 transition-colors duration-200 font-medium dark:text-gray-300 dark:hover:text-blue-400">
                         Cursos en progreso
                     </a>
                 </li>
                 <li>
-                    <a href="#" 
+                    <a href="{{ route('cursos.completados') }}" 
                        class="py-2 px-3 text-gray-700 hover:text-blue-700 transition-colors duration-200 font-medium dark:text-gray-300 dark:hover:text-blue-400">
                         Cursos Terminados
                     </a>
