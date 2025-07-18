@@ -9,6 +9,52 @@ use Illuminate\Support\Facades\DB;
 class CursoNoInscritoController extends Controller
 {
 
+public function buscarCursos(Request $request)
+{
+    $usuarioId = Auth::id();
+    
+    if (!$usuarioId) {
+        return redirect()->route('login');
+    }
+
+    $busqueda = $request->get('buscar', '');
+    
+    // Inicializar query base
+    $query = DB::table('cursos as c')
+        ->join('users as u', 'c.instructor_id', '=', 'u.id')
+        ->leftJoin('inscripciones as i', function($join) use ($usuarioId) {
+            $join->on('c.id', '=', 'i.curso_id')
+                 ->where('i.usuario_id', '=', $usuarioId);
+        })
+        ->select([
+            'c.*',
+            'u.name as instructor_nombre',
+            DB::raw('(SELECT COUNT(*) FROM videos WHERE curso_id = c.id) as videos_count'),
+            DB::raw('(SELECT COUNT(*) FROM comentarios co JOIN videos v ON co.video_id = v.id WHERE v.curso_id = c.id) as comentarios_count'),
+            DB::raw('CASE WHEN i.usuario_id IS NOT NULL THEN "inscrito" ELSE "disponible" END as estado_inscripcion')
+        ])
+        ->orderBy('c.titulo');
+
+    // Si hay búsqueda, aplicar filtros
+    if (!empty(trim($busqueda)) && strlen(trim($busqueda)) >= 2) {
+        $query->where(function($subQuery) use ($busqueda) {
+            $subQuery->where('c.titulo', 'LIKE', "%$busqueda%")
+                     ->orWhere('c.descripcion', 'LIKE', "%$busqueda%")
+                     ->orWhere('u.name', 'LIKE', "%$busqueda%");
+        });
+    } else {
+        // Si no hay búsqueda, no mostrar resultados
+        $query->whereRaw('1 = 0'); // Esto hace que no devuelva resultados
+    }
+
+    try {
+        $cursos = $query->paginate(1)->appends($request->query());
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error en la búsqueda: ' . $e->getMessage());
+    }
+
+    return view('buscar-video', compact('cursos', 'busqueda'));
+}
     public function mostrarCursosDisponibles()
 {
     $usuarioId = Auth::id();

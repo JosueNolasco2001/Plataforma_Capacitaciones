@@ -1,6 +1,8 @@
 <x-app-layout>
+    
     <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 motion-preset-slide-right">
-        
+       
+         
         <!-- Header del curso -->
         <div class="curso-header text-center py-8 text-white px-4 rounded-lg shadow-lg 
         animate-gradient-intense bg-[length:400%_400%] 
@@ -16,7 +18,19 @@
         <!-- Descripción del curso -->
         <p class="text-sm text-white p-4">
             {{ $curso->descripcion }}
-        </p>
+        </p>   @if($porcentajeProgreso == 100)
+                <!-- Mensaje de felicitaciones por completar el curso -->
+                <div class="mt-8 text-center mb-8">
+<div class=" rounded-lg p-6 text-white">                        <h3 class="text-2xl font-bold mb-2">¡Felicitaciones! 🎉</h3>
+                        <p class="text-lg">Has completado exitosamente el curso "{{ $curso->titulo }}"</p>
+                        <div class="mt-4">
+                            <span class="bg-white text-green-600 px-4 py-2 rounded-full font-medium">
+                                Curso Completado al 100%
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            @endif 
 
         @if($estaInscrito)
           <!-- Estadísticas del progreso -->
@@ -124,20 +138,6 @@
                 @endforelse
             </div>
 
-            @if($porcentajeProgreso == 100)
-                <!-- Mensaje de felicitaciones por completar el curso -->
-                <div class="mt-8 text-center">
-                    <div class="bg-gradient-to-r from-green-400 to-blue-500 rounded-lg p-6 text-white">
-                        <h3 class="text-2xl font-bold mb-2">¡Felicitaciones! 🎉</h3>
-                        <p class="text-lg">Has completado exitosamente el curso "{{ $curso->titulo }}"</p>
-                        <div class="mt-4">
-                            <span class="bg-white text-green-600 px-4 py-2 rounded-full font-medium">
-                                Curso Completado al 100%
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            @endif
 
         @else
             <!-- Botón de Suscribirse -->

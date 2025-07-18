@@ -41,7 +41,7 @@ Route::post('/curso/{id}/suscribirse', [CursoNoInscritoController::class, 'suscr
 
 Route::get('/mis-cursos', [CursoNoInscritoController::class, 'misCursos'])->name('cursos.mis-cursos');
 Route::get('/cursos-completados', [CursoNoInscritoController::class, 'cursosCompletados'])->name('cursos.completados');
-
+Route::get('/buscar-cursos', [CursoNoInscritoController::class, 'buscarCursos'])->name('cursos.buscar');
 
 Route::middleware([
     'auth:sanctum',
