@@ -1,14 +1,13 @@
 <x-app-layout>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="overflow-hidden shadow-xl sm:rounded-lg">
+            <div class="overflow-hidden l sm:rounded-lg">
                 <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 motion-preset-slide-right">
                     <div class="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-10">
                         @forelse($cursos as $curso)
                             <div class="rounded overflow-hidden shadow-lg">
                                 <div class="relative">
                                     <a href="{{ route('curso.videos', $curso->id) }}">
-                                        <div>{{$curso->urlImg}}</div>
                                         <img class="w-full" 
                                         
 src="{{ $curso->urlImg ? asset('storage/img/' . $curso->urlImg) : 'https://images.pexels.com/photos/257816/pexels-photo-257816.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' }}"                                             alt="{{ $curso->titulo }}">

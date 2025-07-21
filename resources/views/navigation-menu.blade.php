@@ -1,12 +1,12 @@
 <nav class="bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 shadow-lg fixed w-full top-0 left-0 z-50">
-    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-3">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-2">
         
         <!-- Logo y Menú Hamburguesa (Mobile) -->
         <div class="flex items-center justify-between w-full md:w-auto">
             <!-- Logo -->
             <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
-                <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" />
-                <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SENACIT</span>
+                <img src="{{ asset('img/logo-senacit.png') }}" class="h-20 " alt="Flowbite Logo" />
+
             </a>
 
             <!-- Mobile menu button -->

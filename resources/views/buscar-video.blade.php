@@ -1,6 +1,6 @@
 <x-app-layout>
     <!-- Contenedor con padding superior -->
-    <div class="pt-8 pb-12">
+    <div class="pt-14 pb-12">
         <form action="{{ route('cursos.buscar') }}" method="GET" class="max-w-2xl mx-auto px-4">
             <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
             <div class="relative">
@@ -32,7 +32,7 @@
                     </h2>
                 </div>
                 
-                <div class="overflow-hidden shadow-xl sm:rounded-lg">
+                <div class="overflow-hidden sm:rounded-lg">
                     <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 motion-preset-slide-right">
                         <div class="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-10">
                             @forelse($cursos as $curso)
