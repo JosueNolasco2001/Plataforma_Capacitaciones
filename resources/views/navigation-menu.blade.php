@@ -43,7 +43,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/buscar/x/video" 
+                    <a href="{{ route('cursos.buscar') }}" 
                        class="py-2 px-3 text-gray-700 hover:text-blue-700 transition-colors duration-200 font-medium dark:text-gray-300 dark:hover:text-blue-400">
                         Buscar Curso
                     </a>

@@ -382,7 +382,9 @@ document.addEventListener('DOMContentLoaded', function() {
             btnText.textContent = 'Replying...';
             
             try {
-                const response = await fetch(`/comentario/${comentarioId}/respuesta`, {
+const baseUrl = "{{ route('comentario.respuesta', ':id') }}";
+const url = baseUrl.replace(':id', comentarioId);
+                const response = await fetch( url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
