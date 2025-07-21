@@ -18,19 +18,69 @@
         <!-- Descripción del curso -->
         <p class="text-sm text-white p-4">
             {{ $curso->descripcion }}
-        </p>   @if($porcentajeProgreso == 100)
-                <!-- Mensaje de felicitaciones por completar el curso -->
-                <div class="mt-8 text-center mb-8">
-<div class=" rounded-lg p-6 text-white">                        <h3 class="text-2xl font-bold mb-2">¡Felicitaciones! 🎉</h3>
-                        <p class="text-lg">Has completado exitosamente el curso "{{ $curso->titulo }}"</p>
-                        <div class="mt-4">
-                            <span class="bg-white text-green-600 px-4 py-2 rounded-full font-medium">
-                                Curso Completado al 100%
-                            </span>
-                        </div>
+        </p>   
+
+        @if($porcentajeProgreso == 100)
+            <!-- Mensaje de felicitaciones por completar el curso -->
+            <div class="mt-8 text-center mb-8">
+                <div class="rounded-lg p-6 text-white ">
+                    <h3 class="text-3xl font-bold mb-4 flex items-center justify-center gap-3">
+                        ¡Felicitaciones! 
+                    </h3>
+                    <p class="text-xl mb-6">Has completado exitosamente el curso "{{ $curso->titulo }}"</p>
+                    
+                  
+
+                    <!-- Botones de diploma -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <!-- Formulario para descargar diploma -->
+                        <form action="{{ route('diploma.descargar') }}" method="POST" style="display: inline;">
+                            @csrf
+                            <input type="hidden" name="curso_titulo" value="{{ $curso->titulo }}">
+                            <input type="hidden" name="instructor_nombre" value="{{ $curso->instructor_nombre }}">
+                            <input type="hidden" name="curso_descripcion" value="{{ $curso->descripcion }}">
+                            <input type="hidden" name="total_videos" value="{{ $totalVideos }}">
+                            <input type="hidden" name="videos_completados" value="{{ $videosCompletados }}">
+                            
+                         <button type="submit" class="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/50">
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+    
+    <div class="relative flex items-center gap-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <span>Descargar Diploma</span>
+    </div>
+</button>
+                        </form>
+
+                        <!-- Formulario para ver diploma en navegador -->
+                        <form action="{{ route('diploma.ver') }}" method="POST" target="_blank" style="display: inline;">
+                            @csrf
+                            <input type="hidden" name="curso_titulo" value="{{ $curso->titulo }}">
+                            <input type="hidden" name="instructor_nombre" value="{{ $curso->instructor_nombre }}">
+                            <input type="hidden" name="curso_descripcion" value="{{ $curso->descripcion }}">
+                            <input type="hidden" name="total_videos" value="{{ $totalVideos }}">
+                            <input type="hidden" name="videos_completados" value="{{ $videosCompletados }}">
+                            
+                       <button type="submit" class="group relative px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-500/50">
+    <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+    
+    <div class="relative flex items-center gap-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>
+        <span>Ver Diploma</span>
+    </div>
+</button>
+                        </form>
                     </div>
+
+                
                 </div>
-            @endif 
+            </div>
+        @endif 
 
         @if($estaInscrito)
           <!-- Estadísticas del progreso -->
@@ -70,9 +120,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                @forelse($videos as $video)
     <a href="{{ route('video.mostrar', $video->id) }}" 
-       class="group relative block bg-black rounded-lg overflow-hidden 
-          
-              ">
+       class="group relative block bg-black rounded-lg overflow-hidden">
         
         <!-- Imagen del video -->
      <img
@@ -83,7 +131,7 @@
            transition-opacity"
 />
         
-        <!-- Overlay de video completado - mismo que el hover -->
+        <!-- Overlay de video completado -->
         @if($video->completado)
             <div class="absolute inset-0 bg-gray-900 opacity-50 rounded-lg"></div>
             <div class="absolute top-2 right-2 bg-green-500 text-white p-2 rounded-full shadow-lg">

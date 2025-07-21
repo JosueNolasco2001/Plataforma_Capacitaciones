@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\CursoNoInscritoController;
+use App\Http\Controllers\DiplomaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -42,6 +43,16 @@ Route::post('/curso/{id}/suscribirse', [CursoNoInscritoController::class, 'suscr
 Route::get('/mis-cursos', [CursoNoInscritoController::class, 'misCursos'])->name('cursos.mis-cursos');
 Route::get('/cursos-completados', [CursoNoInscritoController::class, 'cursosCompletados'])->name('cursos.completados');
 Route::get('/buscar-cursos', [CursoNoInscritoController::class, 'buscarCursos'])->name('cursos.buscar');
+
+Route::middleware(['auth'])->group(function () {
+    // Ruta para descargar el diploma en PDF
+    Route::post('/diploma/descargar', [DiplomaController::class, 'generarDiploma'])
+        ->name('diploma.descargar');
+    
+    // Ruta para ver el diploma en el navegador
+    Route::post('/diploma/ver', [DiplomaController::class, 'mostrarDiploma'])
+        ->name('diploma.ver');
+});
 
 Route::middleware([
     'auth:sanctum',

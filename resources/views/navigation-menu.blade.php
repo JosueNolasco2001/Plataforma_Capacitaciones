@@ -25,26 +25,37 @@
             <ul class="flex space-x-8">
                 <li>
                     <a href="{{ route('cursos.disponibles') }}" 
-                       class="py-2 px-3 text-blue-700 hover:text-blue-800 transition-colors duration-200 font-medium" 
-                       aria-current="page">
+                       class="py-2 px-4 rounded-lg font-medium transition-all duration-200 
+                              {{ request()->routeIs('cursos.disponibles') || request()->routeIs('dashboard') 
+                                 ? 'text-blue-700' 
+                                 : 'text-gray-700 hover:text-blue-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-700' }}">
                         Inicio
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('cursos.mis-cursos') }}" 
-                       class="py-2 px-3 text-gray-700 hover:text-blue-700 transition-colors duration-200 font-medium dark:text-gray-300 dark:hover:text-blue-400">
+                       class="py-2 px-4 rounded-lg font-medium transition-all duration-200 
+                              {{ request()->routeIs('cursos.mis-cursos') 
+                                 ? 'text-blue-700' 
+                                 : 'text-gray-700 hover:text-blue-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-700' }}">
                         Cursos en progreso
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('cursos.completados') }}" 
-                       class="py-2 px-3 text-gray-700 hover:text-blue-700 transition-colors duration-200 font-medium dark:text-gray-300 dark:hover:text-blue-400">
+                       class="py-2 px-4 rounded-lg font-medium transition-all duration-200 
+                              {{ request()->routeIs('cursos.completados') 
+                                 ? 'text-blue-700' 
+                                 : 'text-gray-700 hover:text-blue-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-700' }}">
                         Cursos Terminados
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('cursos.buscar') }}" 
-                       class="py-2 px-3 text-gray-700 hover:text-blue-700 transition-colors duration-200 font-medium dark:text-gray-300 dark:hover:text-blue-400">
+                       class="py-2 px-4 rounded-lg font-medium transition-all duration-200 
+                              {{ request()->routeIs('cursos.buscar') 
+                                 ? 'text-blue-700' 
+                                 : 'text-gray-700 hover:text-blue-700 hover:bg-blue-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-700' }}">
                         Buscar Curso
                     </a>
                 </li>
@@ -192,20 +203,32 @@
             
             <!-- Mobile Navigation Links -->
             <div class="space-y-1 pt-2">
-                <a href="{{ route('dashboard') }}" 
-                   class="block px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-lg dark:text-blue-500 dark:bg-gray-800">
+                <a href="{{ route('cursos.disponibles') }}" 
+                   class="block px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                          {{ request()->routeIs('cursos.disponibles') || request()->routeIs('dashboard') 
+                             ? 'text-blue-700' 
+                             : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
                     Inicio
                 </a>
-                <a href="#" 
-                   class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <a href="{{ route('cursos.mis-cursos') }}" 
+                   class="block px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                          {{ request()->routeIs('cursos.mis-cursos') 
+                             ? 'text-blue-700' 
+                             : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
                     Cursos en progreso
                 </a>
-                <a href="#" 
-                   class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <a href="{{ route('cursos.completados') }}" 
+                   class="block px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                          {{ request()->routeIs('cursos.completados') 
+                             ? 'text-blue-700' 
+                             : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
                     Cursos Terminados
                 </a>
-                <a href="/buscar/x/video" 
-                   class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <a href="{{ route('cursos.buscar') }}" 
+                   class="block px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                          {{ request()->routeIs('cursos.buscar') 
+                             ? 'text-blue-700' 
+                             : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700' }}">
                     Buscar Curso
                 </a>
             </div>
