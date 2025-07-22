@@ -12,8 +12,10 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
-
+use Laravel\Fortify\Contracts\VerifyEmailResponse; 
+use Laravel\Fortify\Contracts\LoginResponse;
 class FortifyServiceProvider extends ServiceProvider
+
 {
     /**
      * Register any application services.
@@ -41,6 +43,22 @@ class FortifyServiceProvider extends ServiceProvider
 
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
+        });
+
+        // AGREGAR ESTO:
+        $this->app->instance(LoginResponse::class, new class implements LoginResponse {
+            public function toResponse($request)
+            {
+                return redirect('/homepage'); // Cambia por tu ruta deseada
+            }
+        });
+
+          // AGREGAR ESTO PARA LA VERIFICACIÓN DE EMAIL:
+        $this->app->instance(VerifyEmailResponse::class, new class implements VerifyEmailResponse {
+            public function toResponse($request)
+            {
+                return redirect('/homepage')->with('status', 'Email verificado exitosamente!');
+            }
         });
     }
 }

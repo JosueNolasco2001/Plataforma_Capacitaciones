@@ -4,7 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\CursoNoInscritoController;
 use App\Http\Controllers\DiplomaController;
+use App\Http\Controllers\Auth\CustomEmailVerificationController;
 
+Route::post('/email/custom-verification-notification', [CustomEmailVerificationController::class, 'send'])
+    ->middleware('auth')
+    ->name('custom.verification.send');
+    
 Route::get('/', function () {
     return view('welcome');
 });
