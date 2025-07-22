@@ -6,7 +6,7 @@
         <!-- Header del curso -->
         <div class="curso-header text-center py-8 text-white px-4 rounded-lg shadow-lg 
         animate-gradient-intense bg-[length:400%_400%] 
-        bg-gradient-to-r from-blue-500 via-purple-500 to-pink-600">
+        bg-gradient-to-r from-blue-500 via-purple-500 to-pink-600 mt-[10%] sm:mt-0">
             <h1 class="text-4xl md:text-5xl font-bold mb-2 animate-title-pop">
                 {{ $curso->titulo }}
             </h1>
@@ -86,16 +86,16 @@
           <!-- Estadísticas del progreso -->
 <div class="flex justify-center mb-4">
     <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
-        <div class="flex items-center space-x-12">
-            <div class="text-center px-4">
+        <div class="flex items-center ">
+            <div class="text-center px-2">
                 <div class="text-2xl font-bold text-blue-600 mb-2">{{ $videosCompletados }}</div>
                 <div class="text-sm text-gray-500 whitespace-nowrap">Videos Vistos</div>
             </div>
-            <div class="text-center px-4">
+            <div class="text-center px-2">
                 <div class="text-2xl font-bold text-gray-600 mb-2">{{ $totalVideos }}</div>
                 <div class="text-sm text-gray-500 whitespace-nowrap">Total Videos</div>
             </div>
-            <div class="text-center px-4">
+            <div class="text-center px-2">
                 <div class="text-2xl font-bold text-green-600 mb-2">{{ $porcentajeProgreso }}%</div>
                 <div class="text-sm text-gray-500 whitespace-nowrap">Completado</div>
             </div>
@@ -156,7 +156,7 @@
             </div>
         </div>
     
-        <div class="relative p-4 sm:p-6 lg:p-8 mt-3">
+        <div class="relative p-8 mt-3">
             <p class="text-sm font-medium tracking-widest text-pink-500 uppercase">
                 VIDEO {{ $video->orden }}
             </p>

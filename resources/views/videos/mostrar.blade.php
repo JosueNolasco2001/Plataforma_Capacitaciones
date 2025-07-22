@@ -3,7 +3,7 @@
 
         <!-- Header del curso -->
         <div
-            class="curso-header text-center py-8 text-white px-4 rounded-lg shadow-lg 
+            class="mt-[10%] sm:mt-0 curso-header text-center py-8 text-white px-4 rounded-lg shadow-lg 
         animate-gradient-intense bg-[length:400%_400%] 
         bg-gradient-to-r from-blue-500 via-purple-500 to-pink-600">
             <h1 class="text-4xl md:text-5xl font-bold mb-2 animate-title-pop">
