@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\CursoNoInscritoController;
 use App\Http\Controllers\DiplomaController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\CustomEmailVerificationController;
 
 Route::post('/email/custom-verification-notification', [CustomEmailVerificationController::class, 'send'])
@@ -58,6 +59,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/diploma/ver', [DiplomaController::class, 'mostrarDiploma'])
         ->name('diploma.ver');
 });
+
+
+
+  
+
+//RUTAS ADMIN
+
+
+    Route::get('/agregar-video', [AdminController::class, 'agregarVideo'])->name('agregar.video');
+    Route::post('/store-course', [AdminController::class, 'storeCourse'])->name('store.course');
 
 Route::middleware([
     'auth:sanctum',

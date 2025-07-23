@@ -4,7 +4,7 @@
         <!-- Logo y Menú Hamburguesa (Mobile) -->
         <div class="flex items-center justify-between w-full md:w-auto">
             <!-- Logo -->
-            <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <a href="{{ route('cursos.disponibles') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
                 <img src="{{ asset('img/logo-senacit.png') }}" class="h-20 " alt="Flowbite Logo" />
 
             </a>

@@ -11,7 +11,7 @@
                                        
                                         <img class="w-full" 
                                         
-src="{{ $curso->urlImg ? asset('storage/img/' . $curso->urlImg) : 'https://images.pexels.com/photos/257816/pexels-photo-257816.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' }}"                                             alt="{{ $curso->titulo }}">
+src="{{ $curso->urlImg ? asset('storage/images/courses/'.$curso->urlImg) : 'https://images.pexels.com/photos/257816/pexels-photo-257816.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' }}"                                             alt="{{ $curso->titulo }}">
                                         <div class="hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-gray-900 opacity-25"></div>
                                     </a> 
                                     <a href="#!">

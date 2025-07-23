@@ -22,7 +22,7 @@
         <!-- Reproductor de video -->
         <center>
             <video id="videoPlayer" class="rounded-lg" controls>
-                <source src="{{ asset('storage/videos/' . $video->url) }}" type="video/mp4">
+                <source  src="{{ asset('storage/videos/' . $video->url) }}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         </center>
@@ -56,13 +56,13 @@
                         <label for="contenido" class="sr-only">Your comment</label>
                         <textarea id="contenido" name="contenido" rows="4"
                             class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-[rgba(17,24,39,0.4)] focus:ring-0 dark:text-white dark:placeholder-gray-400"
-                            placeholder="Write a comment..." required></textarea>
+                            placeholder="Escribe un comentario" required></textarea>
                     </div>
                     <div
                         class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600 border-gray-200">
                         <button type="submit" id="btnComentario"
                             class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
-                            <span class="btn-text">Post comment</span>
+                            <span class="btn-text">Comentar</span>
                             <svg class="animate-spin ml-2 h-4 w-4 text-white hidden" id="loading-spinner" fill="none"
                                 viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
@@ -93,24 +93,28 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 15v2m0 0v2m0-2h2m-2 0H8m4-10V9m0 0V7m0 2h2m-2 0H8" />
                             </svg>
-                            Verificar email para comentar
+                            Verificar email presionando aqui para comentar
                         </button>
                     </div>
                 </div>
-         <div id="verificationMessage" class="hidden mt-4 bg-green-50 border-l-4 border-green-400 p-4 mb-4 rounded">
-    <div class="flex">
-        <div class="flex-shrink-0">
-            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-        </div>
-        <div class="ml-3">
-            <p class="text-sm text-green-700">
-                <strong>¡Correo enviado exitosamente!</strong> Revisa tu bandeja de entrada y haz clic en el enlace de verificación.
-            </p>
-        </div>
-    </div>
-</div>
+                <div id="verificationMessage"
+                    class="hidden mt-4 bg-green-50 border-l-4 border-green-400 p-4 mb-4 rounded">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700">
+                                <strong>¡Correo enviado exitosamente!</strong> Revisa tu bandeja de entrada y haz clic
+                                en el enlace de verificación.
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Mensaje informativo -->
                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 rounded">
@@ -137,8 +141,8 @@
         <div id="mensaje" class="hidden mb-4 p-4 rounded-lg"></div>
 
         <p class="ms-auto text-xs text-gray-500 dark:text-gray-400">
-            Remember, contributions to this topic should follow our
-            <a href="#" class="text-blue-600 dark:text-blue-500 hover:underline">Community Guidelines</a>.
+            Recuerda que las contribuciones a este tema deben seguir nuestras
+            <a href="#" class="text-blue-600 dark:text-blue-500 hover:underline">Normas de la Comunidad</a>.
         </p>
 
         <!-- Contenedor de comentarios -->
@@ -174,7 +178,7 @@
                                         stroke-width="2"
                                         d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z" />
                                 </svg>
-                                Reply
+                                Responder
                             </button>
                         </div>
 
@@ -185,16 +189,16 @@
                                 <div class="flex-1">
                                     <textarea name="contenido" rows="3"
                                         class="w-full px-3 py-2 text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Write a reply..." required></textarea>
+                                        placeholder="Escribe tu respuesta..." required></textarea>
                                 </div>
                                 <div class="flex flex-col space-y-2">
                                     <button type="submit"
                                         class="px-4 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-200">
-                                        <span class="btn-text">Reply</span>
+                                        <span class="btn-text">Responder</span>
                                     </button>
                                     <button type="button" onclick="toggleRespuestaForm({{ $comentario->id }})"
                                         class="px-4 py-2 text-xs font-medium text-center text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200">
-                                        Cancel
+                                        Cancelar
                                     </button>
                                 </div>
                             </div>
@@ -485,11 +489,11 @@
                         // Agregar nuevo comentario al DOM
                         const comentario = data.comentario;
                         const fechaFormateada = new Date(comentario.fecha_creacion).toLocaleDateString(
-                        'en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                        });
+                            'en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                            });
 
                         const comentarioHtml = `
                         <article class="comentario-item p-6 text-base rounded-lg bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] mb-4" data-comentario-id="${comentario.id}">
@@ -716,18 +720,18 @@
                             verificationMessage.textContent =
                                 '✅ Correo de verificación enviado. Por favor revisa tu bandeja de entrada.';
                             verificationMessage.classList.remove('hidden');
- 
 
-       setTimeout(() => {
-                                   hideVerificationModal()
-                                
+
+                            setTimeout(() => {
+                                hideVerificationModal()
+
                             }, 1);
                             // Ocultar mensaje después de 5 segundos
                             setTimeout(() => {
                                 verificationMessage.classList.add('hidden');
-                                
+
                             }, 5000);
-                        
+
 
                             // Activar rate limiting en el frontend
                             verificationButton.disabled = true;
@@ -755,13 +759,13 @@
 
                             updateCountdown();
                         } else {
-                               setTimeout(() => {
-                                   hideVerificationModal()
-                                
+                            setTimeout(() => {
+                                hideVerificationModal()
+
                             }, 1000);
                             setTimeout(() => {
-       window.location.reload();
-    }, 1500);
+                                window.location.reload();
+                            }, 1500);
                             throw new Error(data.message || 'Error al enviar el correo');
                         }
                     } catch (error) {
