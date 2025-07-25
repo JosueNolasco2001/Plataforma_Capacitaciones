@@ -25,13 +25,13 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'titulo' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'urlImg' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'descripcion' => 'required|string',
+            'urlImg' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'estado' => 'required|boolean',
-            'videos' => 'nullable|array',
+            'videos' => 'required|array',
             'videos.*.titulo' => 'required_with:videos|string|max:255',
             'videos.*.archivo' => 'required_with:videos|file|mimes:mp4,avi,mov,wmv,flv|max:102400',
-            'videos.*.orden' => 'nullable|integer|min:1',
+            'videos.*.orden' => 'required|integer|min:1',
             'videos.*.estado' => 'required_with:videos|boolean'
         ]);
 

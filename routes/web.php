@@ -67,8 +67,10 @@ Route::middleware(['auth'])->group(function () {
 //RUTAS ADMIN
 
 
+ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/agregar-video', [AdminController::class, 'agregarVideo'])->name('agregar.video');
     Route::post('/store-course', [AdminController::class, 'storeCourse'])->name('store.course');
+});
 
 Route::middleware([
     'auth:sanctum',

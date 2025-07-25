@@ -1,10 +1,9 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-white leading-tight mt-[5%]">
             <i class="fas fa-plus-circle text-blue-600 mr-3"></i>
             {{ __('Agregar Nuevo Curso') }}
         </h2>
-    </x-slot>
+  
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
@@ -35,8 +34,8 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Título del curso -->
                             <div class="md:col-span-2">
-                                <x-label for="titulo" value="{{ __('Título del Curso') }}" />
-                                <x-input id="titulo" class="block mt-1 w-full" type="text" name="titulo" :value="old('titulo')" required />
+                                <x-label for="titulo" class="!text-black" value="{{ __('Título del Curso') }}" />
+                                <x-input id="titulo" class="block mt-1 w-full !text-black" type="text" name="titulo" :value="old('titulo')" required />
                                 @error('titulo')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -44,8 +43,8 @@
 
                             <!-- Imagen del curso -->
                             <div>
-                                <x-label for="urlImg" value="{{ __('Imagen del Curso') }}" />
-                                <input id="urlImg" name="urlImg" type="file" accept="image/*"
+                                <x-label for="urlImg" class="!text-black" value="{{ __('Imagen del Curso') }}" />
+                                <input id="urlImg" name="urlImg" type="file" accept="image/*" required
                                     class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-md"/>
                                 @error('urlImg')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -54,7 +53,7 @@
 
                             <!-- Estado del curso -->
                             <div>
-                                <x-label for="estado" value="{{ __('Estado del Curso') }}" />
+                                <x-label for="estado" class="!text-black" value="{{ __('Estado del Curso') }}" />
                                 <select id="estado" name="estado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="0" {{ old('estado') == '0' ? 'selected' : '' }}>Borrador</option>
                                     <option value="1" {{ old('estado') == '1' ? 'selected' : '' }}>Publicado</option>
@@ -66,10 +65,10 @@
 
                             <!-- Descripción -->
                             <div class="md:col-span-2">
-                                <x-label for="descripcion" value="{{ __('Descripción del Curso') }}" />
-                                <textarea id="descripcion" name="descripcion" rows="4"
+                                <x-label for="descripcion" class="!text-black" value="{{ __('Descripción del Curso') }}" />
+                                <textarea id="descripcion" name="descripcion" rows="4" required
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    placeholder="Describe qué aprenderán los estudiantes en este curso...">{{ old('descripcion') }}</textarea>
+                                    placeholder="Describe qué aprenderán los estudiantes en este curso...">{{ old('descripcion') }} </textarea>
                                 @error('descripcion')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -109,10 +108,7 @@
                         </a>
                         
                         <div class="space-x-3">
-                            <button type="button" id="previewBtn" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors">
-                                <i class="fas fa-eye mr-2"></i>
-                                Vista Previa
-                            </button>
+                            
                             <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
                                 <i class="fas fa-save mr-2"></i>
                                 Crear Curso
@@ -250,74 +246,40 @@
             }
 
             // Vista previa
-            document.getElementById('previewBtn').addEventListener('click', function() {
-                const formData = new FormData(document.getElementById('courseForm'));
-                
-                let preview = 'VISTA PREVIA DEL CURSO\n\n';
-                preview += `Título: ${formData.get('titulo')}\n`;
-                preview += `Descripción: ${formData.get('descripcion')}\n`;
-                preview += `Estado: ${formData.get('estado') == '1' ? 'Publicado' : 'Borrador'}\n\n`;
-                
-                const videos = document.querySelectorAll('.video-item');
-                preview += `Videos (${videos.length}):\n`;
-                videos.forEach((video, index) => {
-                    const titulo = video.querySelector('input[name="videos[][titulo]"]').value;
-                    const orden = video.querySelector('input[name="videos[][orden]"]').value;
-                    preview += `${index + 1}. ${titulo} (Orden: ${orden})\n`;
-                });
-                
-                alert(preview);
-            });
-
-            // Validación del formulario
-            document.getElementById('courseForm').addEventListener('submit', function(e) {
-                console.log('Formulario enviado');
-                
-                const titulo = document.getElementById('titulo').value.trim();
-                const videos = document.querySelectorAll('.video-item');
-                
-                console.log('Título:', titulo);
-                console.log('Videos encontrados:', videos.length);
-                
-                if (!titulo) {
-                    e.preventDefault();
-                    alert('El título del curso es obligatorio');
-                    return;
-                }
-                
-                if (videos.length === 0) {
-                    const confirm = window.confirm('¿Está seguro de crear un curso sin videos?');
-                    if (!confirm) {
-                        e.preventDefault();
-                        return;
-                    }
-                }
-                
-                // Validar que todos los videos tengan título
-                let hasError = false;
-                videos.forEach((video, index) => {
-                    const videoTitulo = video.querySelector('.video-titulo').value.trim();
-                    console.log(`Video ${index + 1} título:`, videoTitulo);
-                    if (!videoTitulo) {
-                        hasError = true;
-                    }
-                });
-                
-                if (hasError) {
-                    e.preventDefault();
-                    alert('Todos los videos deben tener un título');
-                    return;
-                }
-                
-                console.log('Validación pasada, enviando formulario...');
-                
-                // Mostrar datos del formulario
-                const formData = new FormData(this);
-                console.log('Datos del formulario:');
-                for (let [key, value] of formData.entries()) {
-                    console.log(key, value);
-                }
-            });
+ document.getElementById('courseForm').addEventListener('submit', function(e) {
+    const videos = document.querySelectorAll('.video-item');
+    
+    // Validación estricta: Bloquear si no hay videos
+    if (videos.length === 0) {
+        e.preventDefault();
+        noVideosMessage.innerHTML = `
+            <i class="fas fa-exclamation-circle text-red-500 text-4xl mb-4"></i>
+            <p class="text-red-600 font-bold">¡Error!</p>
+            <p>Debes agregar al menos un video para crear el curso.</p>
+        `;
+        noVideosMessage.style.display = 'block';
+        noVideosMessage.scrollIntoView({ behavior: 'smooth' });
+        return;
+    }
+    
+    // Validar que todos los videos tengan título y archivo
+    let hasError = false;
+    videos.forEach((video) => {
+        const titulo = video.querySelector('.video-titulo').value.trim();
+        const archivo = video.querySelector('.video-archivo').files[0];
+        
+        if (!titulo || !archivo) {
+            hasError = true;
+            video.style.border = '1px solid red'; // Resaltar errores
+        }
+    });
+    
+    if (hasError) {
+        e.preventDefault();
+        alert('Todos los videos deben tener un título y un archivo seleccionado.');
+        return;
+    }
+});
         });
     </script>
 </x-app-layout>
