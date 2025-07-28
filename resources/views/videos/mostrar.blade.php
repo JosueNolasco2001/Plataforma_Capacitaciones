@@ -21,14 +21,16 @@
 
         <!-- Reproductor de video -->
         <center>
-            <video id="videoPlayer" class="rounded-lg" controls>
-                <source  src="{{ asset('storage/videos/' . $video->url) }}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+          <video id="videoPlayer" class="rounded-lg" 
+       controls 
+       @if(!$yaVisto) onseeked="checkSeek(event)" @endif>
+    <source src="{{ asset('storage/videos/' . $video->url) }}" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
         </center>
 
         <!-- Indicador de estado del video -->
-        <div id="video-status" class="text-center mt-4 text-white">
+        <div id="video-status" class="text-center mt-4  mb-4  text-white">
             @if ($yaVisto)
                 <span
                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
@@ -45,6 +47,8 @@
                 </span>
             @endif
         </div>
+         <!-- Mensaje de estado -->
+        <div id="mensaje" class="hidden mb-4 p-4 rounded-lg mt-4"></div>
 
         <!-- Formulario de comentarios -->
         @if (auth()->user()->email_verified_at)
@@ -137,8 +141,7 @@
             </div>
         @endif
 
-        <!-- Mensaje de estado -->
-        <div id="mensaje" class="hidden mb-4 p-4 rounded-lg"></div>
+       
 
         <p class="ms-auto text-xs text-gray-500 dark:text-gray-400">
             Recuerda que las contribuciones a este tema deben seguir nuestras
@@ -225,7 +228,7 @@
                                 <article
                                     class="respuesta-item p-6 mb-3 mt-3 ml-6 lg:ml-12 text-base bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] rounded-lg">
                                     <footer class="flex justify-between items-center mb-2">
-                                        <div class="flex items-center">
+                                        <div class="flex items-center" id="prueba">
                                             <p
                                                 class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
                                                 <img class="mr-2 w-6 h-6 rounded-full"
@@ -337,7 +340,14 @@
             </div>
         </div>
     </div>
-
+<style>
+    #videoPlayer:not([data-completed])::-webkit-media-controls-forward-button,
+    #videoPlayer:not([data-completed])::-webkit-media-controls-seek-back-button,
+    #videoPlayer:not([data-completed])::-webkit-media-controls-seek-forward-button {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
     <script>
         // Variables globales
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -789,5 +799,49 @@
 
         // Ejecutar cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', updateVerificationButton);
+
+        // Función para verificar si el usuario intenta adelantar
+function checkSeek(event) {
+    const video = event.target;
+    const tolerance = 5; // segundos de tolerancia
+    
+    // Si el usuario intenta saltar a un punto más allá del 5% del tiempo visto
+    if (video.currentTime > (video.duration * 0.05) && !videoMarcadoComoVisto) {
+        // Revertir al último punto permitido (5% del video)
+        video.currentTime = video.duration * 0.05;
+        
+        // Mostrar mensaje al usuario
+        mostrarMensaje('Debes verificar el video completo antes de poder adelantar', 'error');
+    }
+}
+
+// Modifica el event listener del DOMContentLoaded para el video
+document.addEventListener('DOMContentLoaded', function() {
+    const videoPlayer = document.getElementById('videoPlayer');
+
+    if (videoPlayer) {
+        // Si el video ya fue visto, permitir todas las acciones
+        if (videoMarcadoComoVisto) {
+            videoPlayer.removeAttribute('onseeked');
+        }
+
+        videoPlayer.addEventListener('ended', function() {
+            marcarVideoComoVisto();
+            // Una vez marcado como visto, permitir adelantar
+            videoPlayer.removeAttribute('onseeked');
+        });
+
+        videoPlayer.addEventListener('timeupdate', function() {
+            if (!videoMarcadoComoVisto) {
+                const porcentaje = (this.currentTime / this.duration) * 100;
+                if (porcentaje >= 95) {
+                    marcarVideoComoVisto();
+                    // Una vez marcado como visto, permitir adelantar
+                    videoPlayer.removeAttribute('onseeked');
+                }
+            }
+        });
+    }
+});
     </script>
 </x-app-layout>
