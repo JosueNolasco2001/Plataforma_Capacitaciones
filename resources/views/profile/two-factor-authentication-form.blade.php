@@ -8,7 +8,7 @@
     </x-slot>
 
     <x-slot name="content">
-        <h3 class="text-lg font-medium text-black">
+        <h3 class="text-lg font-medium text-white">
             @if ($this->enabled)
                 @if ($showingConfirmation)
                     {{ __('Termina de habilitar la autenticación de dos factores.') }}
@@ -20,7 +20,7 @@
             @endif
         </h3>
 
-        <div class="mt-3 max-w-xl text-sm text-black">
+        <div class="mt-3 max-w-xl text-sm text-white">
             <p>
                 {{ __('Cuando la autenticación de dos factores esté habilitada, se te pedirá un token seguro y aleatorio durante la autenticación. Puedes obtener este token desde la aplicación Google Authenticator de tu teléfono.') }}
             </p>

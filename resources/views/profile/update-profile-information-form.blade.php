@@ -54,14 +54,14 @@
 
         <!-- Nombre -->
         <div class="col-span-6 sm:col-span-4">
-            <x-label for="name" value="{{ __('Nombre') }}" class="!text-black font-medium" />
+            <x-label for="name" value="{{ __('Nombre') }}" class="!text-blwhiteck font-medium" />
             <x-input id="name" type="text" class="mt-1 block w-full bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-400 focus:ring-blue-400" wire:model="state.name" required autocomplete="name" />
             <x-input-error for="name" class="mt-2 text-red-400" />
         </div>
 
         <!-- Correo Electrónico -->
-        <div class="col-span-6 sm:col-span-4 text-black">
-            <x-label for="email" value="{{ __('Correo Electrónico') }}" class="!text-black font-medium" />
+        <div class="col-span-6 sm:col-span-4 text-white">
+            <x-label for="email" value="{{ __('Correo Electrónico') }}" class="!text-white font-medium" />
             <x-input id="email" type="email" class="mt-1 block w-full bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-400 focus:ring-blue-400" wire:model="state.email" required autocomplete="username" />
             <x-input-error for="email" class="mt-2 text-red-400" />
 
