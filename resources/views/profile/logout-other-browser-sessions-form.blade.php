@@ -1,3 +1,5 @@
+
+<div>
 <x-action-section class="">
     <x-slot name="title">
         <span class="text-white font-semibold">{{ __('Sesiones del Navegador') }}</span>
@@ -62,6 +64,9 @@
             </x-action-message>
         </div>
 
+
+    </x-slot>
+</x-action-section>
         <!-- Modal de Confirmación para Cerrar Otras Sesiones -->
         <x-dialog-modal wire:model.live="confirmingLogout">
             <x-slot name="title">
@@ -97,5 +102,4 @@
                 </x-button>
             </x-slot>
         </x-dialog-modal>
-    </x-slot>
-</x-action-section>
+</div>
