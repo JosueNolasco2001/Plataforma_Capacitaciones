@@ -7,7 +7,7 @@
         <span class="text-gray-300">{{ __('Asegúrate de que tu cuenta use una contraseña larga y aleatoria para mantenerse segura.') }}</span>
     </x-slot>
 
-    <x-slot name="form">
+    <x-slot name="form" class="">
         <div class="col-span-6 sm:col-span-4">
             <x-label for="current_password" value="{{ __('Contraseña Actual') }}" class="!text-black font-medium" />
             <x-input id="current_password" type="password" class="mt-1 block w-full bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-400 focus:ring-blue-400" wire:model="state.current_password" autocomplete="current-password" />

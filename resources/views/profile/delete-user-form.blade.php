@@ -1,51 +1,55 @@
 <x-action-section>
     <x-slot name="title">
-        {{ __('Delete Account') }}
+        <span class="text-white font-semibold">{{ __('Eliminar Cuenta') }}</span>
     </x-slot>
 
     <x-slot name="description">
-        {{ __('Permanently delete your account.') }}
+        <span class="text-white">{{ __('Elimina permanentemente tu cuenta.') }}</span>
     </x-slot>
 
     <x-slot name="content">
-        <div class="max-w-xl text-sm text-gray-600">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
+        <div class="max-w-xl text-sm text-black">
+            {{ __('Una vez que tu cuenta sea eliminada, todos sus recursos y datos serán eliminados permanentemente. Antes de eliminar tu cuenta, por favor descarga cualquier dato o información que desees conservar.') }}
         </div>
 
         <div class="mt-5">
-            <x-danger-button wire:click="confirmUserDeletion" wire:loading.attr="disabled">
-                {{ __('Delete Account') }}
+            <x-danger-button wire:click="confirmUserDeletion" wire:loading.attr="disabled"
+                class="bg-red-600 hover:bg-red-700 text-white font-medium">
+                {{ __('Eliminar Cuenta') }}
             </x-danger-button>
         </div>
 
-        <!-- Delete User Confirmation Modal -->
+        <!-- Modal de Confirmación para Eliminar Usuario -->
         <x-dialog-modal wire:model.live="confirmingUserDeletion">
             <x-slot name="title">
-                {{ __('Delete Account') }}
+                <span class="text-white font-semibold">{{ __('Eliminar Cuenta') }}</span>
             </x-slot>
 
             <x-slot name="content">
-                {{ __('Are you sure you want to delete your account? Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
+                <span class="text-white">{{ __('¿Estás seguro de que quieres eliminar tu cuenta? Una vez que tu cuenta sea eliminada, todos sus recursos y datos serán eliminados permanentemente. Por favor, ingresa tu contraseña para confirmar que deseas eliminar permanentemente tu cuenta.') }}</span>
 
                 <div class="mt-4" x-data="{}" x-on:confirming-delete-user.window="setTimeout(() => $refs.password.focus(), 250)">
-                    <x-input type="password" class="mt-1 block w-3/4"
-                                autocomplete="current-password"
-                                placeholder="{{ __('Password') }}"
-                                x-ref="password"
-                                wire:model="password"
-                                wire:keydown.enter="deleteUser" />
+                    <x-input type="password" 
+                        class="mt-1 block w-3/4 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-400 focus:ring-blue-400"
+                        autocomplete="current-password"
+                        placeholder="{{ __('Contraseña') }}"
+                        x-ref="password"
+                        wire:model="password"
+                        wire:keydown.enter="deleteUser" />
 
-                    <x-input-error for="password" class="mt-2" />
+                    <x-input-error for="password" class="mt-2 text-red-400" />
                 </div>
             </x-slot>
 
             <x-slot name="footer">
-                <x-secondary-button wire:click="$toggle('confirmingUserDeletion')" wire:loading.attr="disabled">
-                    {{ __('Cancel') }}
+                <x-secondary-button wire:click="$toggle('confirmingUserDeletion')" wire:loading.attr="disabled"
+                    class="!bg-gray-700 text-white hover:bg-gray-600 border-gray-600">
+                    {{ __('Cancelar') }}
                 </x-secondary-button>
 
-                <x-danger-button class="ms-3" wire:click="deleteUser" wire:loading.attr="disabled">
-                    {{ __('Delete Account') }}
+                <x-danger-button class="ms-3 bg-red-600 hover:bg-red-700 text-white font-medium" 
+                    wire:click="deleteUser" wire:loading.attr="disabled">
+                    {{ __('Eliminar Cuenta') }}
                 </x-danger-button>
             </x-slot>
         </x-dialog-modal>

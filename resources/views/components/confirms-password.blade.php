@@ -36,13 +36,13 @@
         </div>
     </x-slot>
 
-    <x-slot name="footer">
+    <x-slot name="footer" class="!bg-gray-700">
         <x-secondary-button wire:click="stopConfirmingPassword" wire:loading.attr="disabled" 
-            class="bg-gray-700 !text-black hover:bg-gray-600 border-gray-600">
+            class="!bg-gray-700 !text-white  border-gray-600">
             {{ __('Cancelar') }}
         </x-secondary-button>
 
-        <x-button class="ms-3 bg-blue-600 hover:bg-blue-700 text-white font-medium" 
+        <x-button class="ms-3 !bg-blue-600 hover:bg-blue-700 text-white font-medium" 
             dusk="confirm-password-button" 
             wire:click="confirmPassword" 
             wire:loading.attr="disabled">
