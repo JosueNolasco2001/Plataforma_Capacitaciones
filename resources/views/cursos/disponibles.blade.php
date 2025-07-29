@@ -52,6 +52,10 @@ src="{{ $curso->urlImg ?  asset('storage/images/courses/'.$curso->urlImg) : 'htt
                             </div>
                         @endforelse
                     </div>
+                      <!-- Enlaces de paginación -->
+                      @if($cursos->hasPages())
+                            <center class="mt-8">{{ $cursos->links() }}</center>
+                        @endif
                 </div>
             </div>
         </div>

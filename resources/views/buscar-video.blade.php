@@ -91,7 +91,7 @@
                             @endforelse
                         </div>
                         
-                        <!-- Paginación Laravel (igual que tu ejemplo) -->
+                     
                         @if($cursos->hasPages())
                             <center class="mt-8">{{ $cursos->links() }}</center>
                         @endif

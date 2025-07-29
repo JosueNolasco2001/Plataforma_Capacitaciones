@@ -48,14 +48,14 @@ public function buscarCursos(Request $request)
     }
 
     try {
-        $cursos = $query->paginate(1)->appends($request->query());
+        $cursos = $query->paginate(6)->appends($request->query());
     } catch (\Exception $e) {
         return back()->with('error', 'Error en la búsqueda: ' . $e->getMessage());
     }
 
     return view('buscar-video', compact('cursos', 'busqueda'));
 }
-    public function mostrarCursosDisponibles()
+public function mostrarCursosDisponibles() 
 {
     $usuarioId = Auth::id();
     
@@ -64,36 +64,32 @@ public function buscarCursos(Request $request)
     }
 
     try {
-        // Reutilizar la lógica del método index()
-        $cursosInscritos = DB::select("
-            SELECT curso_id 
-            FROM inscripciones 
-            WHERE usuario_id = ?
-        ", [$usuarioId]);
+        $perPage = 8; // 9 cursos por página (3x3 grid)
         
-        $idsInscritos = array_column($cursosInscritos, 'curso_id');
-        
-        if (empty($idsInscritos)) {
-            $cursos = DB::select("
-                SELECT c.*,
-                       (SELECT COUNT(*) FROM videos WHERE curso_id = c.id) as videos_count,
-                       (SELECT COUNT(*) FROM comentarios co JOIN videos v ON co.video_id = v.id WHERE v.curso_id = c.id) as comentarios_count,
-                       u.name as instructor_nombre
-                FROM cursos c
-                JOIN users u ON c.instructor_id = u.id
-            ");
-        } else {
-            $placeholders = implode(',', array_fill(0, count($idsInscritos), '?'));
-            $cursos = DB::select("
-                SELECT c.*,
-                       (SELECT COUNT(*) FROM videos WHERE curso_id = c.id) as videos_count,
-                       (SELECT COUNT(*) FROM comentarios co JOIN videos v ON co.video_id = v.id WHERE v.curso_id = c.id) as comentarios_count,
-                       u.name as instructor_nombre
-                FROM cursos c
-                JOIN users u ON c.instructor_id = u.id
-                WHERE c.id NOT IN ($placeholders)
-            ", $idsInscritos);
+        // Obtener IDs de cursos en los que el usuario ya está inscrito
+        $cursosInscritos = DB::table('inscripciones')
+            ->where('usuario_id', $usuarioId)
+            ->pluck('curso_id')
+            ->toArray();
+
+        // Query base para cursos disponibles (no inscritos)
+        $query = DB::table('cursos as c')
+            ->join('users as u', 'c.instructor_id', '=', 'u.id')
+            ->select([
+                'c.*',
+                'u.name as instructor_nombre',
+                DB::raw('(SELECT COUNT(*) FROM videos WHERE curso_id = c.id) as videos_count'),
+                DB::raw('(SELECT COUNT(*) FROM comentarios co JOIN videos v ON co.video_id = v.id WHERE v.curso_id = c.id) as comentarios_count')
+            ]);
+
+        // Excluir cursos en los que ya está inscrito
+        if (!empty($cursosInscritos)) {
+            $query->whereNotIn('c.id', $cursosInscritos);
         }
+
+        // Aplicar paginación
+        $cursos = $query->orderBy('c.titulo')
+                       ->paginate($perPage);
 
         return view('cursos.disponibles', compact('cursos'));
         

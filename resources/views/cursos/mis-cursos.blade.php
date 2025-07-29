@@ -52,6 +52,7 @@ src="{{ $curso->urlImg ? asset('storage/images/courses/'.$curso->urlImg)  : 'htt
                             </div>
                         @endforelse
                     </div>
+                   
                 </div>
             </div>
         </div>

@@ -528,7 +528,7 @@
                                     <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z"/>
                                     </svg>
-                                    Reply
+                                    Responder
                                 </button>
                             </div>
 
@@ -537,17 +537,18 @@
                                     <div class="flex-1">
                                         <textarea name="contenido" rows="3" 
                                                   class="w-full px-3 py-2 text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                                                  placeholder="Write a reply..." required></textarea>
+                                                  placeholder="Escribe un comentario..." required></textarea>
                                     </div>
                                     <div class="flex flex-col space-y-2">
                                         <button type="submit" 
                                                 class="px-4 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-200">
-                                            <span class="btn-text">Reply</span>
+                                            <span class="btn-text">Responder</span>
                                         </button>
                                         <button type="button" onclick="toggleRespuestaForm(${comentario.id})"
                                                 class="px-4 py-2 text-xs font-medium text-center text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200">
-                                            Cancel
-                                        </button>
+                                                Cancelar
+
+                                                </button>
                                     </div>
                                 </div>
                             </form>
@@ -573,7 +574,7 @@
                 } finally {
                     button.disabled = false;
                     spinner.classList.add('hidden');
-                    btnText.textContent = 'Post comment';
+                    btnText.textContent = 'Comentar';
                 }
             });
 
@@ -601,7 +602,7 @@
             const btnText = button.querySelector('.btn-text');
 
             button.disabled = true;
-            btnText.textContent = 'Replying...';
+            btnText.textContent = 'Respondiendo...';
 
             try {
                 const baseUrl = "{{ route('comentario.respuesta', ':id') }}";
@@ -664,7 +665,7 @@
                 mostrarMensaje('Error al agregar respuesta', 'error');
             } finally {
                 button.disabled = false;
-                btnText.textContent = 'Reply';
+                btnText.textContent = 'Responder';
             }
         }
 
