@@ -41,7 +41,7 @@
                             <input type="hidden" name="curso_descripcion" value="{{ $curso->descripcion }}">
                             <input type="hidden" name="total_videos" value="{{ $totalVideos }}">
                             <input type="hidden" name="videos_completados" value="{{ $videosCompletados }}">
-                            
+                            <input type="hidden" name="curso_id" value="{{ $curso->id }}">
                          <button type="submit" class="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/50">
     <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
     
@@ -62,6 +62,7 @@
                             <input type="hidden" name="curso_descripcion" value="{{ $curso->descripcion }}">
                             <input type="hidden" name="total_videos" value="{{ $totalVideos }}">
                             <input type="hidden" name="videos_completados" value="{{ $videosCompletados }}">
+                            <input type="hidden" name="curso_id" value="{{ $curso->id }}">
                             
                        <button type="submit" class="group relative px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-500/50">
     <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>

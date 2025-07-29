@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB; 
 use Mpdf\Mpdf;
 use Carbon\Carbon;
 
@@ -34,7 +35,7 @@ class DiplomaController extends Controller
                 'curso_descripcion' => $request->curso_descripcion ?? 'Curso de programación',
                 'total_videos' => $request->total_videos ?? 0,
                 'videos_completados' => $request->videos_completados ?? 0,
-                'fecha_completado' => Carbon::now()->locale('es')->isoFormat('D [de] MMMM [de] Y'),
+              'fecha_completado' => $this->obtenerFechaCompletadoCurso($request->curso_id),
                 'codigo_diploma' => 'DIP-' . strtoupper(substr($request->curso_titulo ?? 'CUR', 0, 3)) . '-' . $usuario->id . '-' . date('Ymd'),
                 'ano_actual' => Carbon::now()->year
             ];
@@ -106,7 +107,7 @@ class DiplomaController extends Controller
                 'curso_descripcion' => $request->curso_descripcion ?? 'Curso de programación',
                 'total_videos' => $request->total_videos ?? 0,
                 'videos_completados' => $request->videos_completados ?? 0,
-                'fecha_completado' => Carbon::now()->locale('es')->isoFormat('D [de] MMMM [de] Y'),
+             'fecha_completado' => $this->obtenerFechaCompletadoCurso($request->curso_id),
                 'codigo_diploma' => 'DIP-' . strtoupper(substr($request->curso_titulo ?? 'CUR', 0, 3)) . '-' . $usuario->id . '-' . date('Ymd'),
                 'ano_actual' => Carbon::now()->year
             ];
@@ -159,4 +160,30 @@ class DiplomaController extends Controller
             return response()->json(['error' => $e->getMessage()]);
         }
     }
+
+    /**
+ * Obtiene la fecha en que el usuario completó todos los videos del curso
+ */
+private function obtenerFechaCompletadoCurso($cursoId)
+{
+    $usuario = Auth::user();
+    
+    // Obtener la fecha del último video completado por el usuario en este curso
+    $ultimaVisualizacion = DB::table('progreso')
+        ->join('videos', 'progreso.video_id', '=', 'videos.id')
+        ->where('videos.curso_id', $cursoId)
+        ->where('progreso.usuario_id', $usuario->id)
+        ->where('progreso.completado', 1)
+        ->orderBy('progreso.ultima_vista', 'desc')
+        ->first();
+        
+    if ($ultimaVisualizacion) {
+        return Carbon::parse($ultimaVisualizacion->ultima_vista)
+            ->locale('es')
+            ->isoFormat('D [de] MMMM [de] Y');
+    }
+    
+    // Si no se encuentra fecha específica, usar la fecha actual como fallback
+    return Carbon::now()->locale('es')->isoFormat('D [de] MMMM [de] Y');
+}
 }

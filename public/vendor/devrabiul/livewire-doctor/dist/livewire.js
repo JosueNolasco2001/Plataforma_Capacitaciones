@@ -447,7 +447,7 @@
     return null;
   }
   function getUpdateUri() {
-    return "/Plataforma_Capacitaciones/public/livewire/update"
+    return document.querySelector("[data-update-uri]")?.getAttribute("data-update-uri") ?? window.livewireScriptConfig["uri"] ?? null;
   }
   function contentIsFromDump(content) {
     return !!content.match(/<script>Sfdump\(".+"\)<\/script>/);

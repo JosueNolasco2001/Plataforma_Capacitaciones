@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "92964ea30c5a7bd32fccf101d6f1e7b7",
+    "content-hash": "6ad941f686520638f71ac6bdb949dfe6",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -238,6 +238,64 @@
                 "source": "https://github.com/DASPRiD/Enum/tree/1.0.6"
             },
             "time": "2024-08-09T14:30:48+00:00"
+        },
+        {
+            "name": "devrabiul/livewire-doctor",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/devrabiul/livewire-doctor.git",
+                "reference": "fddf301e72b9ac5a7170389e469cef024ba7cf4b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/devrabiul/livewire-doctor/zipball/fddf301e72b9ac5a7170389e469cef024ba7cf4b",
+                "reference": "fddf301e72b9ac5a7170389e469cef024ba7cf4b",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "LivewireDoctor": "Devrabiul\\LivewireDoctor\\Facades\\LivewireDoctor"
+                    },
+                    "providers": [
+                        "Devrabiul\\LivewireDoctor\\LivewireDoctorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Devrabiul\\LivewireDoctor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Muhammad Rabiul",
+                    "email": "devrabiul@gmail.com"
+                }
+            ],
+            "description": "Automatically detect and fix common Livewire issues, with helpful commands and developer tools to streamline your Laravel development.",
+            "homepage": "https://github.com/devrabiul/livewire-doctor",
+            "keywords": [
+                "debug livewire",
+                "laravel",
+                "laravel livewire tools",
+                "livewire",
+                "livewire doctor",
+                "livewire fixer",
+                "livewire health check",
+                "livewire helper"
+            ],
+            "support": {
+                "issues": "https://github.com/devrabiul/livewire-doctor/issues",
+                "source": "https://github.com/devrabiul/livewire-doctor/tree/v1.0.0"
+            },
+            "time": "2025-05-28T17:49:06+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
