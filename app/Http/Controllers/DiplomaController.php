@@ -26,9 +26,20 @@ class DiplomaController extends Controller
             if (!$request->curso_titulo || !$request->instructor_nombre) {
                 return redirect()->back()->with('error', 'Datos del curso incompletos');
             }
+
+            $logoPath = public_path('img/logo-senacit.png');
+$logoBase64 = '';
+
+if (file_exists($logoPath)) {
+    $logoData = file_get_contents($logoPath);
+    $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
+}
+
+
             
             // Recibir todos los datos desde la vista
             $dataDiploma = [
+                 'logo_base64' => $logoBase64,
                 'estudiante_nombre' => $usuario->name,
                 'curso_titulo' => $request->curso_titulo,
                 'instructor_nombre' => $request->instructor_nombre,
@@ -98,9 +109,19 @@ class DiplomaController extends Controller
             if (!$request->curso_titulo || !$request->instructor_nombre) {
                 return redirect()->back()->with('error', 'Datos del curso incompletos');
             }
-            
+  $logoPath = public_path('img/Logo-senacit-original.jpg');
+$logoBase64 = '';
+
+if (file_exists($logoPath)) {
+    $logoData = file_get_contents($logoPath);
+ // Forzar como JPG para mPDF
+$logoBase64 = 'data:image/jpeg;base64,' . base64_encode($logoData);
+}
+
+
             // Recibir todos los datos desde la vista
             $dataDiploma = [
+                  'logo_base64' => $logoBase64,
                 'estudiante_nombre' => $usuario->name,
                 'curso_titulo' => $request->curso_titulo,
                 'instructor_nombre' => $request->instructor_nombre,

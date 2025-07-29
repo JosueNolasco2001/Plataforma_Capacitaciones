@@ -17,14 +17,14 @@
     <!-- Styles -->
     @livewireStyles
 </head>
-<body class="font-sans antialiased">
+<body class="font-sans antialiased bg-[#0A0A0A]">
     <x-banner />
     
     <!-- Navigation (Fixed) -->
     @livewire('navigation-menu')
     
     <!-- Main Content Container con padding-top para navbar fijo -->
-    <div class="min-h-screen pt-16"> <!-- pt-16 = 64px altura aprox del navbar -->
+   <div class="min-h-screen pt-16 relative"> <!-- pt-16 = 64px altura aprox del navbar -->
         
         <!-- Page Heading -->
         @if (isset($header))
@@ -36,7 +36,7 @@
         @endif
         
         <!-- Fondo con efectos especiales -->
-        <div class="fixed inset-0 -z-10 bg-[#0A0A0A]">
+     <div class="fixed inset-0 -z-10 bg-[#0A0A0A] min-h-screen min-w-full">
             <!-- Gradient Mesh -->
             <div class="absolute inset-0 bg-gradient-to-br from-violet-600/20 via-transparent to-cyan-600/20 opacity-50"></div>
             
