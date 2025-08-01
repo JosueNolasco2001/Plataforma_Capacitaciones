@@ -5,6 +5,7 @@ use App\Http\Controllers\VideoController;
 use App\Http\Controllers\CursoNoInscritoController;
 use App\Http\Controllers\DiplomaController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PuppeteerTestController;
 use App\Http\Controllers\Auth\CustomEmailVerificationController;
 
 Route::post('/email/custom-verification-notification', [CustomEmailVerificationController::class, 'send'])
@@ -81,7 +82,8 @@ Route::get('/mis-cursos', [CursoNoInscritoController::class, 'misCursos'])->name
 Route::get('/cursos-completados', [CursoNoInscritoController::class, 'cursosCompletados'])->name('cursos.completados');
 Route::get('/buscar-cursos', [CursoNoInscritoController::class, 'buscarCursos'])->name('cursos.buscar');
 
-
+// En routes/web.php
+Route::get('/test-puppeteer', [PuppeteerTestController::class, 'test']);
 
 
 });

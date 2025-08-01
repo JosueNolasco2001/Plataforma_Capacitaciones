@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "flowbite": "^3.1.2",
+        "puppeteer": "^24.15.0",
         "tailwindcss-intersect": "^2.2.0",
         "tailwindcss-motion": "^1.1.0"
     }

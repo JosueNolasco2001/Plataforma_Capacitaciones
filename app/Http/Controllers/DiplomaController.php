@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; 
-use Mpdf\Mpdf;
+use Spatie\Browsershot\Browsershot;
 use Carbon\Carbon;
 
 class DiplomaController extends Controller
@@ -13,8 +13,6 @@ class DiplomaController extends Controller
     public function generarDiploma(Request $request)
     {
         try {
-            // Debug: Verificar que los datos lleguen
-            
             // Solo obtener el usuario autenticado
             $usuario = Auth::user();
             
@@ -27,67 +25,48 @@ class DiplomaController extends Controller
                 return redirect()->back()->with('error', 'Datos del curso incompletos');
             }
 
-            $logoPath = public_path('img/logo-senacit.png');
-$logoBase64 = '';
+            // Convertir logo a base64
+            $logoPath = public_path('img/Logo-senacit-original.jpg');
+            $logoBase64 = '';
 
-if (file_exists($logoPath)) {
-    $logoData = file_get_contents($logoPath);
-    $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
-}
+            if (file_exists($logoPath)) {
+                $logoData = file_get_contents($logoPath);
+                $logoBase64 = 'data:image/jpeg;base64,' . base64_encode($logoData);
+            }
 
-
-            
             // Recibir todos los datos desde la vista
             $dataDiploma = [
-                 'logo_base64' => $logoBase64,
+                'logo_base64' => $logoBase64,
                 'estudiante_nombre' => $usuario->name,
                 'curso_titulo' => $request->curso_titulo,
                 'instructor_nombre' => $request->instructor_nombre,
                 'curso_descripcion' => $request->curso_descripcion ?? 'Curso de programación',
                 'total_videos' => $request->total_videos ?? 0,
                 'videos_completados' => $request->videos_completados ?? 0,
-              'fecha_completado' => $this->obtenerFechaCompletadoCurso($request->curso_id),
+                'fecha_completado' => $this->obtenerFechaCompletadoCurso($request->curso_id),
                 'codigo_diploma' => 'DIP-' . strtoupper(substr($request->curso_titulo ?? 'CUR', 0, 3)) . '-' . $usuario->id . '-' . date('Ymd'),
                 'ano_actual' => Carbon::now()->year
             ];
             
-            
             // Renderizar la vista
             $html = view('diploma.template', $dataDiploma)->render();
             
-            // Debug: Verificar que el HTML se genere
-            
-            // Configurar mPDF con configuración más básica primero
-           // Configurar mPDF
-            $mpdf = new Mpdf([
-                'mode' => 'utf-8',
-                'format' => 'A4-L',
-                'orientation' => 'L',
-                'margin_left' => 5,
-                'margin_right' => 5,
-                'margin_top' => 5,
-                'margin_bottom' => 5,
-                'default_font' => 'DejaVuSans',
-                'tempDir' => storage_path('app/temp')
-            ]);
-            
-            // Escribir HTML al PDF
-            $mpdf->WriteHTML($html);
+            // Generar PDF con Puppeteer
+            $pdf = Browsershot::html($html)
+                ->waitUntilNetworkIdle()
+                ->paperSize(297, 210, 'mm')    // A4 horizontal como Canva
+                ->margins(0, 0, 0, 0)          // Sin márgenes
+                ->scale(1.0)                   // Escala 1:1
+                ->pdf();
             
             $nombreArchivo = 'Diploma-' . str_replace([' ', '/'], ['-', '-'], $request->curso_titulo ?? 'curso') . '-' . str_replace(' ', '-', $usuario->name) . '.pdf';
             
-            
-            // Generar el PDF en string
-            $pdfContent = $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
-            
             // Retornar como descarga
-            return response($pdfContent)
+            return response($pdf)
                 ->header('Content-Type', 'application/pdf')
                 ->header('Content-Disposition', 'attachment; filename="' . $nombreArchivo . '"')
-                ->header('Content-Length', strlen($pdfContent));
+                ->header('Content-Length', strlen($pdf));
             
-        } catch (\Mpdf\MpdfException $e) {
-            return redirect()->back()->with('error', 'Error al generar PDF: ' . $e->getMessage());
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error al generar el diploma: ' . $e->getMessage());
         }
@@ -96,8 +75,6 @@ if (file_exists($logoPath)) {
     public function mostrarDiploma(Request $request)
     {
         try {
-            // Debug: Verificar que los datos lleguen
-            
             // Solo obtener el usuario autenticado
             $usuario = Auth::user();
             
@@ -109,26 +86,26 @@ if (file_exists($logoPath)) {
             if (!$request->curso_titulo || !$request->instructor_nombre) {
                 return redirect()->back()->with('error', 'Datos del curso incompletos');
             }
-  $logoPath = public_path('img/Logo-senacit-original.jpg');
-$logoBase64 = '';
 
-if (file_exists($logoPath)) {
-    $logoData = file_get_contents($logoPath);
- // Forzar como JPG para mPDF
-$logoBase64 = 'data:image/jpeg;base64,' . base64_encode($logoData);
-}
+            // Convertir logo a base64
+            $logoPath = public_path('img/Logo-senacit-original.jpg');
+            $logoBase64 = '';
 
+            if (file_exists($logoPath)) {
+                $logoData = file_get_contents($logoPath);
+                $logoBase64 = 'data:image/jpeg;base64,' . base64_encode($logoData);
+            }
 
             // Recibir todos los datos desde la vista
             $dataDiploma = [
-                  'logo_base64' => $logoBase64,
+                'logo_base64' => $logoBase64,
                 'estudiante_nombre' => $usuario->name,
                 'curso_titulo' => $request->curso_titulo,
                 'instructor_nombre' => $request->instructor_nombre,
                 'curso_descripcion' => $request->curso_descripcion ?? 'Curso de programación',
                 'total_videos' => $request->total_videos ?? 0,
                 'videos_completados' => $request->videos_completados ?? 0,
-             'fecha_completado' => $this->obtenerFechaCompletadoCurso($request->curso_id),
+                'fecha_completado' => $this->obtenerFechaCompletadoCurso($request->curso_id),
                 'codigo_diploma' => 'DIP-' . strtoupper(substr($request->curso_titulo ?? 'CUR', 0, 3)) . '-' . $usuario->id . '-' . date('Ymd'),
                 'ano_actual' => Carbon::now()->year
             ];
@@ -136,27 +113,16 @@ $logoBase64 = 'data:image/jpeg;base64,' . base64_encode($logoData);
             // Renderizar la vista
             $html = view('diploma.template', $dataDiploma)->render();
             
-            // Configurar mPDF
-            $mpdf = new Mpdf([
-                'mode' => 'utf-8',
-                'format' => 'A4-L',
-                'orientation' => 'L',
-                'margin_left' => 5,
-                'margin_right' => 5,
-                'margin_top' => 5,
-                'margin_bottom' => 5,
-                'default_font' => 'DejaVuSans',
-                'tempDir' => storage_path('app/temp')
-            ]);
-            
-            // Escribir HTML al PDF
-            $mpdf->WriteHTML($html);
-            
-            // Generar el PDF en string
-            $pdfContent = $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
+            // Generar PDF con Puppeteer
+            $pdf = Browsershot::html($html)
+                ->waitUntilNetworkIdle()
+                ->paperSize(297, 210, 'mm')    // A4 horizontal como Canva
+                ->margins(0, 0, 0, 0)          // Sin márgenes
+                ->scale(1.0)                   // Escala 1:1
+                ->pdf();
             
             // Mostrar en navegador
-            return response($pdfContent)
+            return response($pdf)
                 ->header('Content-Type', 'application/pdf')
                 ->header('Content-Disposition', 'inline; filename="diploma.pdf"');
             
@@ -165,46 +131,57 @@ $logoBase64 = 'data:image/jpeg;base64,' . base64_encode($logoData);
         }
     }
     
-    // Método de prueba simple
+    // Método de prueba simple con Puppeteer
     public function test()
     {
         try {
-            $mpdf = new Mpdf();
-            $mpdf->WriteHTML('<h1>Test PDF</h1><p>Si ves esto, mPDF funciona correctamente.</p>');
-            $pdfContent = $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
+            $data = [
+                'titulo' => 'Test Diploma',
+                'estudiante' => 'Usuario Prueba',
+                'fecha' => now()->format('d/m/Y')
+            ];
             
-            return response($pdfContent)
+            $html = view('diploma.template', $data)->render();
+            
+            $pdf = Browsershot::html($html)
+                ->waitUntilNetworkIdle()
+                ->paperSize(297, 210, 'mm')
+                ->margins(0, 0, 0, 0)
+                ->scale(1.0)
+                ->pdf();
+                
+            return response($pdf)
                 ->header('Content-Type', 'application/pdf')
                 ->header('Content-Disposition', 'inline; filename="test.pdf"');
                 
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()]);
+            return "Error: " . $e->getMessage();
         }
     }
 
     /**
- * Obtiene la fecha en que el usuario completó todos los videos del curso
- */
-private function obtenerFechaCompletadoCurso($cursoId)
-{
-    $usuario = Auth::user();
-    
-    // Obtener la fecha del último video completado por el usuario en este curso
-    $ultimaVisualizacion = DB::table('progreso')
-        ->join('videos', 'progreso.video_id', '=', 'videos.id')
-        ->where('videos.curso_id', $cursoId)
-        ->where('progreso.usuario_id', $usuario->id)
-        ->where('progreso.completado', 1)
-        ->orderBy('progreso.ultima_vista', 'desc')
-        ->first();
+     * Obtiene la fecha en que el usuario completó todos los videos del curso
+     */
+    private function obtenerFechaCompletadoCurso($cursoId)
+    {
+        $usuario = Auth::user();
         
-    if ($ultimaVisualizacion) {
-        return Carbon::parse($ultimaVisualizacion->ultima_vista)
-            ->locale('es')
-            ->isoFormat('D [de] MMMM [de] Y');
+        // Obtener la fecha del último video completado por el usuario en este curso
+        $ultimaVisualizacion = DB::table('progreso')
+            ->join('videos', 'progreso.video_id', '=', 'videos.id')
+            ->where('videos.curso_id', $cursoId)
+            ->where('progreso.usuario_id', $usuario->id)
+            ->where('progreso.completado', 1)
+            ->orderBy('progreso.ultima_vista', 'desc')
+            ->first();
+            
+        if ($ultimaVisualizacion) {
+            return Carbon::parse($ultimaVisualizacion->ultima_vista)
+                ->locale('es')
+                ->isoFormat('D [de] MMMM [de] Y');
+        }
+        
+        // Si no se encuentra fecha específica, usar la fecha actual como fallback
+        return Carbon::now()->locale('es')->isoFormat('D [de] MMMM [de] Y');
     }
-    
-    // Si no se encuentra fecha específica, usar la fecha actual como fallback
-    return Carbon::now()->locale('es')->isoFormat('D [de] MMMM [de] Y');
-}
 }
