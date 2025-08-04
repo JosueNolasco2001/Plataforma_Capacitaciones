@@ -31,53 +31,37 @@
                     
                   
 
-                    <!-- Botones de diploma -->
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <!-- Formulario para descargar diploma -->
-                        <form action="{{ route('diploma.descargar') }}" method="POST" style="display: inline;">
-                            @csrf
-                            <input type="hidden" name="curso_titulo" value="{{ $curso->titulo }}">
-                            <input type="hidden" name="instructor_nombre" value="{{ $curso->instructor_nombre }}">
-                            <input type="hidden" name="curso_descripcion" value="{{ $curso->descripcion }}">
-                            <input type="hidden" name="total_videos" value="{{ $totalVideos }}">
-                            <input type="hidden" name="videos_completados" value="{{ $videosCompletados }}">
-                            <input type="hidden" name="curso_id" value="{{ $curso->id }}">
-                         <button type="submit" class="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/50">
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
-    
-    <div class="relative flex items-center gap-3">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-        </svg>
-        <span>Descargar Diploma</span>
-    </div>
-</button>
-                        </form>
+                    
+<!-- Botones de diploma cambiados a GET -->
+<div class="flex flex-col sm:flex-row gap-4 justify-center">
+    <!-- Botón para descargar diploma (GET) -->
+    <a href="{{ route('diploma.descargar.directo', $curso->id) }}" 
+       class="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/50 inline-flex items-center justify-center">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+        
+        <div class="relative flex items-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span>Descargar Diploma</span>
+        </div>
+    </a>
 
-                        <!-- Formulario para ver diploma en navegador -->
-                        <form action="{{ route('diploma.ver') }}" method="POST" target="_blank" style="display: inline;">
-                            @csrf
-                            <input type="hidden" name="curso_titulo" value="{{ $curso->titulo }}">
-                            <input type="hidden" name="instructor_nombre" value="{{ $curso->instructor_nombre }}">
-                            <input type="hidden" name="curso_descripcion" value="{{ $curso->descripcion }}">
-                            <input type="hidden" name="total_videos" value="{{ $totalVideos }}">
-                            <input type="hidden" name="videos_completados" value="{{ $videosCompletados }}">
-                            <input type="hidden" name="curso_id" value="{{ $curso->id }}">
-                            
-                       <button type="submit" class="group relative px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-500/50">
-    <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
-    
-    <div class="relative flex items-center gap-3">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-        </svg>
-        <span>Ver Diploma</span>
-    </div>
-</button>
-                        </form>
-                    </div>
-
+    <!-- Botón para ver diploma (GET) -->
+    <a href="{{ route('diploma.ver.directo', $curso->id) }}" 
+       target="_blank"
+       class="group relative px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-500/50 inline-flex items-center justify-center">
+        <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+        
+        <div class="relative flex items-center gap-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            </svg>
+            <span>Ver Diploma</span>
+        </div>
+    </a>
+</div>
                 
                 </div>
             </div>

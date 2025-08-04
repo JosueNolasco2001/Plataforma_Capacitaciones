@@ -35,13 +35,10 @@ Route::get('/', function () {
 
 
 Route::middleware(['auth'])->group(function () {
-    // Ruta para descargar el diploma en PDF
-    Route::post('/diploma/descargar', [DiplomaController::class, 'generarDiploma'])
-        ->name('diploma.descargar');
-    
-    // Ruta para ver el diploma en el navegador
-    Route::post('/diploma/ver', [DiplomaController::class, 'mostrarDiploma'])
-        ->name('diploma.ver');
+  Route::get('/diploma/{cursoId}/ver', [DiplomaController::class, 'verDiplomaPorCurso'])
+    ->name('diploma.ver.directo');
+Route::get('/diploma/{cursoId}/descargar', [DiplomaController::class, 'descargarDiplomaPorCurso'])
+    ->name('diploma.descargar.directo');
 });
 
 
