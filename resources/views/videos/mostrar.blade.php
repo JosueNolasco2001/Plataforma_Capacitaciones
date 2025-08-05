@@ -158,9 +158,10 @@
                         <div class="flex items-center">
                             <p
                                 class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-                                <img class="mr-2 w-6 h-6 rounded-full"
-                                    src="{{ $comentario->profile_photo_path ? asset('storage/' . $comentario->profile_photo_path) : 'https://flowbite.com/docs/images/people/profile-picture-2.jpg' }}"
-                                    alt="{{ $comentario->usuario_nombre }}">
+                               <img class="mr-2 w-6 h-6 rounded-full object-cover"
+     src="{{ $comentario->profile_photo_path ? asset('storage/' . $comentario->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($comentario->usuario_nombre) . '&background=random&color=fff&size=64' }}"
+     alt="{{ $comentario->usuario_nombre }}">
+
                                 {{ $comentario->usuario_nombre }}
                             </p>
                             <p class="text-sm text-gray-600 dark:text-gray-400">
@@ -231,9 +232,12 @@
                                         <div class="flex items-center" id="prueba">
                                             <p
                                                 class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-                                                <img class="mr-2 w-6 h-6 rounded-full"
-                                                    src="{{ $respuesta->profile_photo_path ? asset('storage/' . $respuesta->profile_photo_path) : 'https://flowbite.com/docs/images/people/profile-picture-5.jpg' }}"
-                                                    alt="{{ $respuesta->usuario_nombre }}">
+                                              <img class="mr-2 w-6 h-6 rounded-full object-cover"
+     src="{{ $respuesta->profile_photo_path 
+        ? asset('storage/' . $respuesta->profile_photo_path) 
+        : 'https://ui-avatars.com/api/?name=' . urlencode($respuesta->usuario_nombre) . '&background=random&color=fff&size=64' }}"
+     alt="{{ $respuesta->usuario_nombre }}">
+
                                                 {{ $respuesta->usuario_nombre }}
                                             </p>
                                             <p class="text-sm text-gray-600 dark:text-gray-400">
@@ -511,7 +515,10 @@
                                 <div class="flex items-center">
                                     <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
                                         <img class="mr-2 w-6 h-6 rounded-full"
-                                             src="${comentario.profile_photo_path ? '/storage/' + comentario.profile_photo_path : 'https://flowbite.com/docs/images/people/profile-picture-2.jpg'}"
+                                             src="${comentario.profile_photo_path 
+        ? '/storage/' + comentario.profile_photo_path 
+        : `https://ui-avatars.com/api/?name=${encodeURIComponent(comentario.usuario_nombre)}&background=random&color=fff&size=64`}"
+
                                              alt="${comentario.usuario_nombre}">
                                         ${comentario.usuario_nombre}
                                     </p>
@@ -634,25 +641,27 @@
                         month: 'short',
                         day: 'numeric'
                     });
+const respuestaHtml = `
+    <article class="respuesta-item p-6 mb-3 mt-3 ml-6 lg:ml-12 text-base bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] rounded-lg">
+        <footer class="flex justify-between items-center mb-2">
+            <div class="flex items-center">
+                <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
+                    <img class="mr-2 w-6 h-6 rounded-full object-cover"
+                         src="${respuesta.profile_photo_path 
+                            ? '/storage/' + respuesta.profile_photo_path 
+                            : `https://ui-avatars.com/api/?name=${encodeURIComponent(respuesta.usuario_nombre)}&background=random&color=fff&size=64`}"
+                         alt="${respuesta.usuario_nombre}">
+                    ${respuesta.usuario_nombre}
+                </p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    <time>${fechaFormateada}</time>
+                </p>
+            </div>
+        </footer>
+        <p class="text-gray-500 dark:text-gray-400">${respuesta.contenido}</p>
+    </article>
+`;
 
-                    const respuestaHtml = `
-                        <article class="respuesta-item p-6 mb-3 mt-3 ml-6 lg:ml-12 text-base bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] rounded-lg">
-                            <footer class="flex justify-between items-center mb-2">
-                                <div class="flex items-center">
-                                    <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-                                        <img class="mr-2 w-6 h-6 rounded-full"
-                                             src="${respuesta.profile_photo_path ? '/storage/' + respuesta.profile_photo_path : 'https://flowbite.com/docs/images/people/profile-picture-5.jpg'}"
-                                             alt="${respuesta.usuario_nombre}">
-                                        ${respuesta.usuario_nombre}
-                                    </p>
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                                        <time>${fechaFormateada}</time>
-                                    </p>
-                                </div>
-                            </footer>
-                            <p class="text-gray-500 dark:text-gray-400">${respuesta.contenido}</p>
-                        </article>
-                    `;
 
                     const comentarioArticle = document.querySelector(`[data-comentario-id="${comentarioId}"]`);
                     const respuestasContainer = comentarioArticle.querySelector('.respuestas-container');

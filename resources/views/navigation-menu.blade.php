@@ -169,22 +169,22 @@
                     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
                         <!-- Account Management -->
                         <li>
-                            <span class="block px-4 py-2 text-xs text-gray-400 dark:text-gray-500">{{ __('Manage Account') }}</span>
+                            <span class="block px-4 py-2 text-xs text-gray-400 dark:text-gray-500">{{ __('Manejo de cuentas') }}</span>
                         </li>
                         
                         <li>
                             <a href="{{ route('profile.show') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white transition-colors">
-                                {{ __('Profile') }}
+                                {{ __('Perfil') }}
                             </a>
                         </li>
-                
+{{--                 
                         @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                         <li>
                             <a href="{{ route('api-tokens.index') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white transition-colors">
                                 {{ __('API Tokens') }}
                             </a>
                         </li>
-                        @endif
+                        @endif --}}
                 
                         <li class="border-t border-gray-200 dark:border-gray-600"></li>
                 
@@ -276,12 +276,12 @@
                    class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg transition-colors">
                     Perfil
                 </a>
-                @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
+                {{-- @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                     <a href="{{ route('api-tokens.index') }}" 
                        class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg transition-colors">
                         Tokens API
                     </a>
-                @endif
+                @endif --}}
                 <form method="POST" action="{{ route('logout') }}" x-data>
                     @csrf
                     <button type="submit" 
