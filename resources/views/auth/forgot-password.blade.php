@@ -4,10 +4,10 @@
             <x-authentication-card-logo />
         </x-slot>
 
-        <div class="mb-4 text-sm text-gray-600">
+        <div class="mb-4 text-sm text-gray-200">
             {{ __('¿Olvidaste tu contraseña? No hay problema. Solo dinos tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña que te permitirá elegir una nueva.') }}
         </div>
-
+|
         @session('status')
             <div class="mb-4 font-medium text-sm text-green-600">
                 {{ $value }}

@@ -48,30 +48,11 @@
                             ¡Tu crecimiento empieza hoy
                         </p>
     
-                        <!-- CTA Section - Better mobile layout -->
-                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-reveal [animation-delay:0.8s]">
-                            <!-- Primary Button - Full width on mobile -->
-                            <button class="group relative w-full sm:w-auto px-6 py-3 min-w-[160px]">
-                                <div class="absolute inset-0 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-lg"></div>
-                                <div class="absolute inset-0 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-lg blur-lg group-hover:opacity-60 transition-opacity duration-500"></div>
-                                <div class="relative flex items-center justify-center gap-2">
-                                    <span class="text-white font-medium">Explore Interface</span>
-                                    <svg class="w-5 h-5 text-white transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                    </svg>
-                                </div>
-                            </button>
-    
-                            <!-- Secondary Button - Full width on mobile -->
-                            <a  href="{{ url('/cursos') }}" class="w-full sm:w-auto px-6 py-3 rounded-lg border border-white/10 bg-white/5 backdrop-blur-lg text-white/70 hover:bg-white/10 hover:text-white transition-all min-w-[160px]">
-                                Ver nuestros cursos
-                            </a>
-                            
-                        </div>
+                   
                     </div>
     
                     <!-- Right Column - Visual Element with better mobile scaling -->
-                    <div class="relative h-[400px] sm:h-[500px] lg:h-[600px] mt-8 lg:mt-0 animate-reveal [animation-delay:1s]">
+                    <div class="relative h-[400px] sm:h-[500px] lg:h-[600px]  lg:mt-0 animate-reveal [animation-delay:1s]">
                 <!-- Morphing Shape Container -->
     <div class="absolute inset-0 flex items-center justify-center">
         <div class="relative w-[280px] sm:w-[350px] lg:w-[400px] h-[280px] sm:h-[350px] lg:h-[400px] animate-morph">
