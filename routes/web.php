@@ -6,6 +6,9 @@ use App\Http\Controllers\CursoNoInscritoController;
 use App\Http\Controllers\DiplomaController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PuppeteerTestController;
+use App\Http\Controllers\ExamenController;
+
+
 use App\Http\Controllers\Auth\CustomEmailVerificationController;
 
 Route::post('/email/custom-verification-notification', [CustomEmailVerificationController::class, 'send'])
@@ -81,6 +84,10 @@ Route::get('/buscar-cursos', [CursoNoInscritoController::class, 'buscarCursos'])
 
 // En routes/web.php
 Route::get('/test-puppeteer', [PuppeteerTestController::class, 'test']);
+// En tu web.php
+
+
+
 
 
 });

@@ -20,14 +20,13 @@
         </center>
 
         <!-- Reproductor de video -->
-        <center>
-          <video id="videoPlayer" class="rounded-lg" 
-       controls 
-       @if(!$yaVisto) onseeked="checkSeek(event)" @endif>
-    <source src="{{ asset('storage/videos/' . $video->url) }}" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
-        </center>
+  <!-- NUEVO: Reproductor YouTube -->
+<center>
+  <div id="youtube-player" class="rounded-lg" style="width: 100%; max-width: 800px; height: 450px;"></div>
+</center>
+
+<!-- Cargar API de YouTube -->
+
 
         <!-- Indicador de estado del video -->
         <div id="video-status" class="text-center mt-4  mb-4  text-white">
@@ -344,514 +343,523 @@
             </div>
         </div>
     </div>
-<style>
-    #videoPlayer:not([data-completed])::-webkit-media-controls-forward-button,
-    #videoPlayer:not([data-completed])::-webkit-media-controls-seek-back-button,
-    #videoPlayer:not([data-completed])::-webkit-media-controls-seek-forward-button {
-        opacity: 0.5;
-        pointer-events: none;
+
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+// Variables para YouTube Player
+let youtubePlayer;
+let playerReady = false;
+let maxTimeReached = 0; // Tiempo máximo alcanzado
+let checkingProgress = false;
+const YOUTUBE_VIDEO_ID = '{{ $youtubeVideoId }}';
+
+
+// Variables globales
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+const isVerified = {{ auth()->user()->email_verified_at ? 'true' : 'false' }};
+let videoMarcadoComoVisto = {{ $yaVisto ? 'true' : 'false' }};
+
+// API de YouTube
+function onYouTubeIframeAPIReady() {
+    youtubePlayer = new YT.Player('youtube-player', {
+        height: '450',
+        width: '800',
+        videoId: YOUTUBE_VIDEO_ID,
+        playerVars: {
+            'playsinline': 1,
+            'rel': 0,
+            'modestbranding': 1,
+            'controls': 1
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    playerReady = true;
+    console.log('YouTube Player está listo');
+    
+    // Si ya fue visto, permitir navegación libre
+    if (videoMarcadoComoVisto) {
+        maxTimeReached = event.target.getDuration();
     }
-</style>
-    <script>
-        // Variables globales
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const isVerified = {{ auth()->user()->email_verified_at ? 'true' : 'false' }};
-        let videoMarcadoComoVisto = {{ $yaVisto ? 'true' : 'false' }};
+}
 
-        // Funciones del modal
-        function showVerificationModal() {
-            document.getElementById('verificationModal').classList.remove('hidden');
-            document.getElementById('verificationModal').classList.add('flex');
+function onPlayerStateChange(event) {
+    console.log('Estado del player:', event.data);
+    
+    // YT.PlayerState.PLAYING = 1
+    if (event.data === YT.PlayerState.PLAYING && !videoMarcadoComoVisto) {
+        startProgressCheck();
+    }
+    
+    // YT.PlayerState.ENDED = 0
+    if (event.data === YT.PlayerState.ENDED) {
+        console.log('Video terminó');
+        marcarVideoComoVisto();
+    }
+}
+
+// Función para verificar progreso y controlar navegación
+function startProgressCheck() {
+    if (checkingProgress || videoMarcadoComoVisto) return;
+    
+    checkingProgress = true;
+    
+    const progressInterval = setInterval(() => {
+        if (!youtubePlayer || !playerReady || videoMarcadoComoVisto) {
+            clearInterval(progressInterval);
+            checkingProgress = false;
+            return;
         }
-
-        function hideVerificationModal() {
-            document.getElementById('verificationModal').classList.add('hidden');
-            document.getElementById('verificationModal').classList.remove('flex');
+        
+        const currentTime = youtubePlayer.getCurrentTime();
+        const duration = youtubePlayer.getDuration();
+        
+        // Actualizar tiempo máximo alcanzado
+        if (currentTime > maxTimeReached) {
+            maxTimeReached = currentTime;
         }
+        
+        // Verificar si intenta adelantar más de 5 segundos
+        if (currentTime > maxTimeReached + 5) {
+            youtubePlayer.seekTo(maxTimeReached, true);
+            mostrarMensaje('Debes ver el video completo antes de adelantar', 'error');
+        }
+        
+        // Verificar si completó el 95% del video
+        const porcentaje = (currentTime / duration) * 100;
+        if (porcentaje >= 95) {
+            marcarVideoComoVisto();
+            clearInterval(progressInterval);
+            checkingProgress = false;
+        }
+        
+    }, 1000); // Verificar cada segundo
+}
 
-        // Cerrar modal con ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                hideVerificationModal();
+// Funciones del modal
+function showVerificationModal() {
+    document.getElementById('verificationModal').classList.remove('hidden');
+    document.getElementById('verificationModal').classList.add('flex');
+}
+
+function hideVerificationModal() {
+    document.getElementById('verificationModal').classList.add('hidden');
+    document.getElementById('verificationModal').classList.remove('flex');
+}
+
+// Cerrar modal con ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        hideVerificationModal();
+    }
+});
+
+// Cerrar modal clicando fuera
+document.getElementById('verificationModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideVerificationModal();
+    }
+});
+
+// Función para marcar video como visto
+function marcarVideoComoVisto() {
+    if (videoMarcadoComoVisto) return;
+
+    fetch(`{{ route('video.marcar-visto', $video->id) }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
             }
-        });
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                videoMarcadoComoVisto = true;
+                maxTimeReached = youtubePlayer ? youtubePlayer.getDuration() : 0; // Permitir navegación libre
+                
+                const pendingStatus = document.getElementById('pending-status');
+                const completedStatus = document.getElementById('completed-status');
 
-        // Cerrar modal clicando fuera
-        document.getElementById('verificationModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                hideVerificationModal();
+                if (pendingStatus && completedStatus) {
+                    pendingStatus.classList.add('hidden');
+                    completedStatus.classList.remove('hidden');
+                }
+
+                mostrarMensaje('¡Video completado exitosamente! 🎉', 'success');
             }
-        });
+        })
+        .catch(error => console.error('Error:', error));
+}
 
-        // Función para marcar video como visto
-        function marcarVideoComoVisto() {
-            if (videoMarcadoComoVisto) return;
+// Función para mostrar mensajes
+function mostrarMensaje(mensaje, tipo = 'success') {
+    const messageDiv = document.getElementById('mensaje');
+    messageDiv.textContent = mensaje;
+    messageDiv.className =
+        `mb-4 p-4 rounded-lg ${tipo === 'success' ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'}`;
+    messageDiv.classList.remove('hidden');
 
-            fetch(`{{ route('video.marcar-visto', $video->id) }}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+    setTimeout(() => {
+        messageDiv.classList.add('hidden');
+    }, 3000);
+}
+
+// Función para alternar formulario de respuesta
+function toggleRespuestaForm(comentarioId) {
+    if (!isVerified) {
+        showVerificationModal();
+        return;
+    }
+
+    const form = document.getElementById(`respuestaForm-${comentarioId}`);
+    form.classList.toggle('hidden');
+
+    if (!form.classList.contains('hidden')) {
+        form.querySelector('textarea').focus();
+    }
+}
+
+// Solo agregar event listeners si el usuario está verificado
+if (isVerified) {
+    // Manejo del formulario de comentarios
+    document.getElementById('comentarioForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const button = document.getElementById('btnComentario');
+        const spinner = document.getElementById('loading-spinner');
+        const btnText = button.querySelector('.btn-text');
+        const contenido = document.getElementById('contenido').value;
+
+        button.disabled = true;
+        spinner.classList.remove('hidden');
+        btnText.textContent = 'Posting...';
+
+        try {
+            const response = await fetch(`{{ route('video.comentario', $video->id) }}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    contenido: contenido
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        videoMarcadoComoVisto = true;
-                        const pendingStatus = document.getElementById('pending-status');
-                        const completedStatus = document.getElementById('completed-status');
+            });
 
-                        if (pendingStatus && completedStatus) {
-                            pendingStatus.classList.add('hidden');
-                            completedStatus.classList.remove('hidden');
-                        }
+            const data = await response.json();
 
-                        mostrarMensaje('¡Video completado exitosamente! 🎉', 'success');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
+            if (data.success) {
+                document.getElementById('contenido').value = '';
+                const noCommentsDiv = document.getElementById('no-comments');
+                if (noCommentsDiv) {
+                    noCommentsDiv.remove();
+                }
 
-        // Función para mostrar mensajes
-        function mostrarMensaje(mensaje, tipo = 'success') {
-            const messageDiv = document.getElementById('mensaje');
-            messageDiv.textContent = mensaje;
-            messageDiv.className =
-                `mb-4 p-4 rounded-lg ${tipo === 'success' ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'}`;
-            messageDiv.classList.remove('hidden');
-
-            setTimeout(() => {
-                messageDiv.classList.add('hidden');
-            }, 3000);
-        }
-
-        // Función para alternar formulario de respuesta
-        function toggleRespuestaForm(comentarioId) {
-            if (!isVerified) {
-                showVerificationModal();
-                return;
-            }
-
-            const form = document.getElementById(`respuestaForm-${comentarioId}`);
-            form.classList.toggle('hidden');
-
-            if (!form.classList.contains('hidden')) {
-                form.querySelector('textarea').focus();
-            }
-        }
-
-        // Event listeners del video
-        document.addEventListener('DOMContentLoaded', function() {
-            const videoPlayer = document.getElementById('videoPlayer');
-
-            if (videoPlayer) {
-                videoPlayer.addEventListener('ended', function() {
-                    marcarVideoComoVisto();
-                });
-
-                videoPlayer.addEventListener('timeupdate', function() {
-                    if (!videoMarcadoComoVisto) {
-                        const porcentaje = (this.currentTime / this.duration) * 100;
-                        if (porcentaje >= 95) {
-                            marcarVideoComoVisto();
-                        }
-                    }
-                });
-            }
-        });
-
-        // Solo agregar event listeners si el usuario está verificado
-        if (isVerified) {
-            // Manejo del formulario de comentarios
-            document.getElementById('comentarioForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                const button = document.getElementById('btnComentario');
-                const spinner = document.getElementById('loading-spinner');
-                const btnText = button.querySelector('.btn-text');
-                const contenido = document.getElementById('contenido').value;
-
-                button.disabled = true;
-                spinner.classList.remove('hidden');
-                btnText.textContent = 'Posting...';
-
-                try {
-                    const response = await fetch(`{{ route('video.comentario', $video->id) }}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: JSON.stringify({
-                            contenido: contenido
-                        })
+                // Agregar nuevo comentario al DOM
+                const comentario = data.comentario;
+                const fechaFormateada = new Date(comentario.fecha_creacion).toLocaleDateString(
+                    'en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
                     });
 
-                    const data = await response.json();
+                const comentarioHtml = `
+                <article class="comentario-item p-6 text-base rounded-lg bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] mb-4" data-comentario-id="${comentario.id}">
+                    <footer class="flex justify-between items-center mb-2">
+                        <div class="flex items-center">
+                            <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
+                                <img class="mr-2 w-6 h-6 rounded-full"
+                                     src="${comentario.profile_photo_path 
+    ? '/storage/' + comentario.profile_photo_path 
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(comentario.usuario_nombre)}&background=random&color=fff&size=64`}"
+                                     alt="${comentario.usuario_nombre}">
+                                ${comentario.usuario_nombre}
+                            </p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                <time>${fechaFormateada}</time>
+                            </p>
+                        </div>
+                    </footer>
+                    <p class="text-gray-500 dark:text-gray-400">${comentario.contenido}</p>
+                    
+                    <div class="flex items-center mt-4 space-x-4">
+                        <button type="button" onclick="toggleRespuestaForm(${comentario.id})"
+                                class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
+                            <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z"/>
+                            </svg>
+                            Responder
+                        </button>
+                    </div>
 
-                    if (data.success) {
-                        document.getElementById('contenido').value = '';
-                        const noCommentsDiv = document.getElementById('no-comments');
-                        if (noCommentsDiv) {
-                            noCommentsDiv.remove();
-                        }
-
-                        // Agregar nuevo comentario (código anterior)
-
-                        // Agregar nuevo comentario al DOM
-                        const comentario = data.comentario;
-                        const fechaFormateada = new Date(comentario.fecha_creacion).toLocaleDateString(
-                            'en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                            });
-
-                        const comentarioHtml = `
-                        <article class="comentario-item p-6 text-base rounded-lg bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] mb-4" data-comentario-id="${comentario.id}">
-                            <footer class="flex justify-between items-center mb-2">
-                                <div class="flex items-center">
-                                    <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-                                        <img class="mr-2 w-6 h-6 rounded-full"
-                                             src="${comentario.profile_photo_path 
-        ? '/storage/' + comentario.profile_photo_path 
-        : `https://ui-avatars.com/api/?name=${encodeURIComponent(comentario.usuario_nombre)}&background=random&color=fff&size=64`}"
-
-                                             alt="${comentario.usuario_nombre}">
-                                        ${comentario.usuario_nombre}
-                                    </p>
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                                        <time>${fechaFormateada}</time>
-                                    </p>
-                                </div>
-                            </footer>
-                            <p class="text-gray-500 dark:text-gray-400">${comentario.contenido}</p>
-                            
-                            <div class="flex items-center mt-4 space-x-4">
-                                <button type="button" onclick="toggleRespuestaForm(${comentario.id})"
-                                        class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
-                                    <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z"/>
-                                    </svg>
-                                    Responder
-                                </button>
+                    <form id="respuestaForm-${comentario.id}" class="respuesta-form hidden mt-4 ml-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-1">
+                                <textarea name="contenido" rows="3" 
+                                          class="w-full px-3 py-2 text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                          placeholder="Escribe un comentario..." required></textarea>
                             </div>
-
-                            <form id="respuestaForm-${comentario.id}" class="respuesta-form hidden mt-4 ml-6">
-                                <div class="flex items-start space-x-4">
-                                    <div class="flex-1">
-                                        <textarea name="contenido" rows="3" 
-                                                  class="w-full px-3 py-2 text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                                                  placeholder="Escribe un comentario..." required></textarea>
-                                    </div>
-                                    <div class="flex flex-col space-y-2">
-                                        <button type="submit" 
-                                                class="px-4 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-200">
-                                            <span class="btn-text">Responder</span>
+                            <div class="flex flex-col space-y-2">
+                                <button type="submit" 
+                                        class="px-4 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-200">
+                                    <span class="btn-text">Responder</span>
+                                </button>
+                                <button type="button" onclick="toggleRespuestaForm(${comentario.id})"
+                                        class="px-4 py-2 text-xs font-medium text-center text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200">
+                                        Cancelar
                                         </button>
-                                        <button type="button" onclick="toggleRespuestaForm(${comentario.id})"
-                                                class="px-4 py-2 text-xs font-medium text-center text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200">
-                                                Cancelar
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="respuestas-container"></div>
+                </article>
+            `;
 
-                                                </button>
-                                    </div>
-                                </div>
-                            </form>
-                            
-                            <div class="respuestas-container"></div>
-                        </article>
-                    `;
+                document.getElementById('comentarios-container').insertAdjacentHTML('afterbegin',
+                    comentarioHtml);
 
-                        document.getElementById('comentarios-container').insertAdjacentHTML('afterbegin',
-                            comentarioHtml);
+                // Agregar event listener al nuevo formulario de respuesta
+                const nuevoForm = document.getElementById(`respuestaForm-${comentario.id}`);
+                nuevoForm.addEventListener('submit', handleRespuestaSubmit);
 
-                        // Agregar event listener al nuevo formulario de respuesta
-                        const nuevoForm = document.getElementById(`respuestaForm-${comentario.id}`);
-                        nuevoForm.addEventListener('submit', handleRespuestaSubmit);
-
-
-                        mostrarMensaje('Comentario agregado exitosamente');
-                    } else {
-                        mostrarMensaje(data.message, 'error');
-                    }
-                } catch (error) {
-                    mostrarMensaje('Error al agregar comentario', 'error');
-                } finally {
-                    button.disabled = false;
-                    spinner.classList.add('hidden');
-                    btnText.textContent = 'Comentar';
-                }
-            });
-
-            // Event listeners para formularios de respuesta
-            const respuestaForms = document.querySelectorAll('.respuesta-form');
-            respuestaForms.forEach(form => {
-                form.addEventListener('submit', handleRespuestaSubmit);
-            });
-        }
-
-        // Función para manejar respuestas
-        async function handleRespuestaSubmit(e) {
-            if (!isVerified) {
-                e.preventDefault();
-                showVerificationModal();
-                return;
+                mostrarMensaje('Comentario agregado exitosamente');
+            } else {
+                mostrarMensaje(data.message, 'error');
             }
+        } catch (error) {
+            mostrarMensaje('Error al agregar comentario', 'error');
+        } finally {
+            button.disabled = false;
+            spinner.classList.add('hidden');
+            btnText.textContent = 'Comentar';
+        }
+    });
 
+    // Event listeners para formularios de respuesta
+    const respuestaForms = document.querySelectorAll('.respuesta-form');
+    respuestaForms.forEach(form => {
+        form.addEventListener('submit', handleRespuestaSubmit);
+    });
+}
+
+// Función para manejar respuestas
+async function handleRespuestaSubmit(e) {
+    if (!isVerified) {
+        e.preventDefault();
+        showVerificationModal();
+        return;
+    }
+
+    e.preventDefault();
+
+    const form = e.target;
+    const comentarioId = form.id.split('-')[1];
+    const contenido = form.querySelector('textarea').value;
+    const button = form.querySelector('button[type="submit"]');
+    const btnText = button.querySelector('.btn-text');
+
+    button.disabled = true;
+    btnText.textContent = 'Respondiendo...';
+
+    try {
+        const baseUrl = "{{ route('comentario.respuesta', ':id') }}";
+        const url = baseUrl.replace(':id', comentarioId);
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                contenido: contenido
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            form.querySelector('textarea').value = '';
+            form.classList.add('hidden');
+
+            // Agregar nueva respuesta al DOM
+            const respuesta = data.respuesta;
+            const fechaFormateada = new Date(respuesta.fecha_creacion).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+const respuestaHtml = `
+<article class="respuesta-item p-6 mb-3 mt-3 ml-6 lg:ml-12 text-base bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] rounded-lg">
+    <footer class="flex justify-between items-center mb-2">
+        <div class="flex items-center">
+            <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
+                <img class="mr-2 w-6 h-6 rounded-full object-cover"
+                     src="${respuesta.profile_photo_path 
+                        ? '/storage/' + respuesta.profile_photo_path 
+                        : `https://ui-avatars.com/api/?name=${encodeURIComponent(respuesta.usuario_nombre)}&background=random&color=fff&size=64`}"
+                     alt="${respuesta.usuario_nombre}">
+                ${respuesta.usuario_nombre}
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                <time>${fechaFormateada}</time>
+            </p>
+        </div>
+    </footer>
+    <p class="text-gray-500 dark:text-gray-400">${respuesta.contenido}</p>
+</article>
+`;
+
+            const comentarioArticle = document.querySelector(`[data-comentario-id="${comentarioId}"]`);
+            const respuestasContainer = comentarioArticle.querySelector('.respuestas-container');
+            respuestasContainer.insertAdjacentHTML('beforeend', respuestaHtml);
+            mostrarMensaje('Respuesta agregada exitosamente');
+        } else {
+            mostrarMensaje(data.message, 'error');
+        }
+    } catch (error) {
+        mostrarMensaje('Error al agregar respuesta', 'error');
+    } finally {
+        button.disabled = false;
+        btnText.textContent = 'Responder';
+    }
+}
+
+// JavaScript para verificación de email
+document.addEventListener('DOMContentLoaded', function() {
+    const verificationForm = document.getElementById('verificationForm');
+    const verificationButton = document.getElementById('verificationButton');
+    const buttonText = document.getElementById('buttonText');
+    const buttonSpinner = document.getElementById('buttonSpinner');
+    const verificationMessage = document.getElementById('verificationMessage');
+
+    if (verificationForm) {
+        // Manejar el contador de espera si está activo
+        @if ($tooMany)
+            let secondsLeft = {{ $retryAfter }};
+
+            const updateCountdown = () => {
+                if (secondsLeft > 0) {
+                    buttonText.textContent = `⏳ Espera ${secondsLeft}s para reenviar`;
+                    secondsLeft--;
+                    setTimeout(updateCountdown, 1000);
+                } else {
+                    buttonText.textContent = '📧 Enviar Correo de Verificación';
+                    verificationButton.disabled = false;
+                    verificationButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    verificationButton.classList.add('bg-blue-600', 'hover:bg-blue-800');
+                }
+            };
+
+            updateCountdown();
+        @endif
+
+        // Manejar el envío del formulario con AJAX
+        verificationForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const form = e.target;
-            const comentarioId = form.id.split('-')[1];
-            const contenido = form.querySelector('textarea').value;
-            const button = form.querySelector('button[type="submit"]');
-            const btnText = button.querySelector('.btn-text');
+            if (verificationButton.disabled) return;
 
-            button.disabled = true;
-            btnText.textContent = 'Respondiendo...';
+            // Mostrar estado de "enviando"
+            verificationButton.disabled = true;
+            verificationButton.classList.remove('bg-blue-600', 'hover:bg-blue-800');
+            verificationButton.classList.add('bg-blue-400');
+            buttonSpinner.classList.remove('hidden');
+            buttonText.textContent = 'Enviando...';
 
             try {
-                const baseUrl = "{{ route('comentario.respuesta', ':id') }}";
-                const url = baseUrl.replace(':id', comentarioId);
-
-                const response = await fetch(url, {
+                const response = await fetch(verificationForm.action, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        contenido: contenido
+                        _token: '{{ csrf_token() }}'
                     })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    form.querySelector('textarea').value = '';
-                    form.classList.add('hidden');
+                    // Mostrar mensaje de éxito
+                    verificationMessage.textContent =
+                        '✅ Correo de verificación enviado. Por favor revisa tu bandeja de entrada.';
+                    verificationMessage.classList.remove('hidden');
 
-                    // Agregar nueva respuesta (código anterior)
-                    // Agregar nueva respuesta al DOM
-                    const respuesta = data.respuesta;
-                    const fechaFormateada = new Date(respuesta.fecha_creacion).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                    });
-const respuestaHtml = `
-    <article class="respuesta-item p-6 mb-3 mt-3 ml-6 lg:ml-12 text-base bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] rounded-lg">
-        <footer class="flex justify-between items-center mb-2">
-            <div class="flex items-center">
-                <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-                    <img class="mr-2 w-6 h-6 rounded-full object-cover"
-                         src="${respuesta.profile_photo_path 
-                            ? '/storage/' + respuesta.profile_photo_path 
-                            : `https://ui-avatars.com/api/?name=${encodeURIComponent(respuesta.usuario_nombre)}&background=random&color=fff&size=64`}"
-                         alt="${respuesta.usuario_nombre}">
-                    ${respuesta.usuario_nombre}
-                </p>
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    <time>${fechaFormateada}</time>
-                </p>
-            </div>
-        </footer>
-        <p class="text-gray-500 dark:text-gray-400">${respuesta.contenido}</p>
-    </article>
-`;
+                    setTimeout(() => {
+                        hideVerificationModal()
+                    }, 1);
+                    
+                    // Ocultar mensaje después de 5 segundos
+                    setTimeout(() => {
+                        verificationMessage.classList.add('hidden');
+                    }, 5000);
 
+                    // Activar rate limiting en el frontend
+                    verificationButton.disabled = true;
+                    verificationButton.classList.remove('bg-blue-400');
+                    verificationButton.classList.add('bg-gray-400', 'cursor-not-allowed');
 
-                    const comentarioArticle = document.querySelector(`[data-comentario-id="${comentarioId}"]`);
-                    const respuestasContainer = comentarioArticle.querySelector('.respuestas-container');
-                    respuestasContainer.insertAdjacentHTML('beforeend', respuestaHtml);
-                    mostrarMensaje('Respuesta agregada exitosamente');
-                } else {
-                    mostrarMensaje(data.message, 'error');
-                }
-            } catch (error) {
-                mostrarMensaje('Error al agregar respuesta', 'error');
-            } finally {
-                button.disabled = false;
-                btnText.textContent = 'Responder';
-            }
-        }
-
-        // JavaScript actualizado
-        document.addEventListener('DOMContentLoaded', function() {
-            const verificationForm = document.getElementById('verificationForm');
-            const verificationButton = document.getElementById('verificationButton');
-            const buttonText = document.getElementById('buttonText');
-            const buttonSpinner = document.getElementById('buttonSpinner');
-            const verificationMessage = document.getElementById('verificationMessage');
-
-            if (verificationForm) {
-                // 1. Manejar el contador de espera si está activo
-                @if ($tooMany)
-                    let secondsLeft = {{ $retryAfter }};
+                    let secondsLeft = data.retry_after || 60;
+                    buttonText.textContent = `⏳ Espera ${secondsLeft}s para reenviar`;
 
                     const updateCountdown = () => {
                         if (secondsLeft > 0) {
-                            buttonText.textContent = `⏳ Espera ${secondsLeft}s para reenviar`;
+                            buttonText.textContent =
+                                `⏳ Espera ${secondsLeft}s para reenviar`;
                             secondsLeft--;
                             setTimeout(updateCountdown, 1000);
                         } else {
                             buttonText.textContent = '📧 Enviar Correo de Verificación';
                             verificationButton.disabled = false;
-                            verificationButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                            verificationButton.classList.add('bg-blue-600', 'hover:bg-blue-800');
+                            verificationButton.classList.remove('bg-gray-400',
+                                'cursor-not-allowed');
+                            verificationButton.classList.add('bg-blue-600',
+                                'hover:bg-blue-800');
                         }
                     };
 
                     updateCountdown();
-                @endif
-
-                // 2. Manejar el envío del formulario con AJAX
-                verificationForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-
-                    if (verificationButton.disabled) return;
-
-                    // Mostrar estado de "enviando"
-                    verificationButton.disabled = true;
-                    verificationButton.classList.remove('bg-blue-600', 'hover:bg-blue-800');
-                    verificationButton.classList.add('bg-blue-400');
-                    buttonSpinner.classList.remove('hidden');
-                    buttonText.textContent = 'Enviando...';
-
-                    try {
-                        const response = await fetch(verificationForm.action, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                _token: '{{ csrf_token() }}'
-                            })
-                        });
-
-                        const data = await response.json();
-
-                        if (data.success) {
-                            // Mostrar mensaje de éxito
-                            verificationMessage.textContent =
-                                '✅ Correo de verificación enviado. Por favor revisa tu bandeja de entrada.';
-                            verificationMessage.classList.remove('hidden');
-
-
-                            setTimeout(() => {
-                                hideVerificationModal()
-
-                            }, 1);
-                            // Ocultar mensaje después de 5 segundos
-                            setTimeout(() => {
-                                verificationMessage.classList.add('hidden');
-
-                            }, 5000);
-
-
-                            // Activar rate limiting en el frontend
-                            verificationButton.disabled = true;
-                            verificationButton.classList.remove('bg-blue-400');
-                            verificationButton.classList.add('bg-gray-400', 'cursor-not-allowed');
-
-                            let secondsLeft = data.retry_after || 60;
-                            buttonText.textContent = `⏳ Espera ${secondsLeft}s para reenviar`;
-
-                            const updateCountdown = () => {
-                                if (secondsLeft > 0) {
-                                    buttonText.textContent =
-                                        `⏳ Espera ${secondsLeft}s para reenviar`;
-                                    secondsLeft--;
-                                    setTimeout(updateCountdown, 1000);
-                                } else {
-                                    buttonText.textContent = '📧 Enviar Correo de Verificación';
-                                    verificationButton.disabled = false;
-                                    verificationButton.classList.remove('bg-gray-400',
-                                        'cursor-not-allowed');
-                                    verificationButton.classList.add('bg-blue-600',
-                                        'hover:bg-blue-800');
-                                }
-                            };
-
-                            updateCountdown();
-                        } else {
-                            setTimeout(() => {
-                                hideVerificationModal()
-
-                            }, 1000);
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1500);
-                            throw new Error(data.message || 'Error al enviar el correo');
-                        }
-                    } catch (error) {
-                        verificationMessage.textContent = '⚠️ ' + error.message;
-                        verificationMessage.classList.remove('hidden', 'bg-green-100',
-                            'border-green-400', 'text-green-700');
-                        verificationMessage.classList.add('bg-red-100', 'border-red-400',
-                            'text-red-700');
-
-                        // Restaurar botón
-                        verificationButton.disabled = false;
-                        verificationButton.classList.remove('bg-blue-400');
-                        verificationButton.classList.add('bg-blue-600', 'hover:bg-blue-800');
-                        buttonText.textContent = '📧 Enviar Correo de Verificación';
-                    } finally {
-                        buttonSpinner.classList.add('hidden');
-                    }
-                });
-            }
-        });
-
-        // Ejecutar cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', updateVerificationButton);
-
-        // Función para verificar si el usuario intenta adelantar
-function checkSeek(event) {
-    const video = event.target;
-    const tolerance = 5; // segundos de tolerancia
-    
-    // Si el usuario intenta saltar a un punto más allá del 5% del tiempo visto
-    if (video.currentTime > (video.duration * 0.05) && !videoMarcadoComoVisto) {
-        // Revertir al último punto permitido (5% del video)
-        video.currentTime = video.duration * 0.05;
-        
-        // Mostrar mensaje al usuario
-        mostrarMensaje('Debes verificar el video completo antes de poder adelantar', 'error');
-    }
-}
-
-// Modifica el event listener del DOMContentLoaded para el video
-document.addEventListener('DOMContentLoaded', function() {
-    const videoPlayer = document.getElementById('videoPlayer');
-
-    if (videoPlayer) {
-        // Si el video ya fue visto, permitir todas las acciones
-        if (videoMarcadoComoVisto) {
-            videoPlayer.removeAttribute('onseeked');
-        }
-
-        videoPlayer.addEventListener('ended', function() {
-            marcarVideoComoVisto();
-            // Una vez marcado como visto, permitir adelantar
-            videoPlayer.removeAttribute('onseeked');
-        });
-
-        videoPlayer.addEventListener('timeupdate', function() {
-            if (!videoMarcadoComoVisto) {
-                const porcentaje = (this.currentTime / this.duration) * 100;
-                if (porcentaje >= 95) {
-                    marcarVideoComoVisto();
-                    // Una vez marcado como visto, permitir adelantar
-                    videoPlayer.removeAttribute('onseeked');
+                } else {
+                    setTimeout(() => {
+                        hideVerificationModal()
+                    }, 1000);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                    throw new Error(data.message || 'Error al enviar el correo');
                 }
+            } catch (error) {
+                verificationMessage.textContent = '⚠️ ' + error.message;
+                verificationMessage.classList.remove('hidden', 'bg-green-100',
+                    'border-green-400', 'text-green-700');
+                verificationMessage.classList.add('bg-red-100', 'border-red-400',
+                    'text-red-700');
+
+                // Restaurar botón
+                verificationButton.disabled = false;
+                verificationButton.classList.remove('bg-blue-400');
+                verificationButton.classList.add('bg-blue-600', 'hover:bg-blue-800');
+                buttonText.textContent = '📧 Enviar Correo de Verificación';
+            } finally {
+                buttonSpinner.classList.add('hidden');
             }
         });
     }
 });
-    </script>
+</script>
 </x-app-layout>

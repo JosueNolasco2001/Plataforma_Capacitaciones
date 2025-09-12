@@ -79,6 +79,13 @@ public function mostrar($id)
             return redirect()->route('cursos.disponibles')->with('error', 'Video no encontrado');
         }
 
+        // Extraer ID de YouTube
+        $youtubeVideoId = $this->extractYouTubeVideoId($video->url);
+        
+        if (!$youtubeVideoId) {
+            return back()->with('error', 'URL de YouTube inválida');
+        }
+
         // Verificar si está inscrito en el curso
         $inscripcion = DB::selectOne("
             SELECT * FROM inscripciones 
@@ -111,19 +118,20 @@ public function mostrar($id)
         }
 
         // Obtener el estado actual del progreso
-$progreso = DB::selectOne("
-    SELECT completado FROM progreso 
-    WHERE usuario_id = ? AND video_id = ?
-", [$usuarioId, $id]);
+        $progreso = DB::selectOne("
+            SELECT completado FROM progreso 
+            WHERE usuario_id = ? AND video_id = ?
+        ", [$usuarioId, $id]);
 
-$yaVisto = $progreso ? $progreso->completado : false;
+        $yaVisto = $progreso ? $progreso->completado : false;
 
-return view('videos.mostrar', compact('video', 'comentarios', 'yaVisto'));
+        return view('videos.mostrar', compact('video', 'comentarios', 'yaVisto', 'youtubeVideoId'));
      
     } catch (\Exception $e) {
         return back()->with('error', 'Error al cargar el video: ' . $e->getMessage());
     }
 }
+
 
 
 public function agregarComentario(Request $request, $videoId)
@@ -327,6 +335,29 @@ public function marcarComoVisto(Request $request, $id)
             'message' => 'Error interno del servidor'
         ], 500);
     }
+}
+// Agregar este método también al final de tu VideoController
+private function extractYouTubeVideoId($url)
+{
+    $url = trim($url);
+    $parsed = parse_url($url);
+    
+    if (!$parsed || !isset($parsed['host'])) {
+        return null;
+    }
+    
+    $host = strtolower($parsed['host']);
+    
+    if ($host === 'youtu.be') {
+        return trim($parsed['path'], '/');
+    } elseif (in_array($host, ['www.youtube.com', 'youtube.com', 'm.youtube.com'])) {
+        if (isset($parsed['query'])) {
+            parse_str($parsed['query'], $queryParams);
+            return isset($queryParams['v']) ? $queryParams['v'] : null;
+        }
+    }
+    
+    return null;
 }
 
 }

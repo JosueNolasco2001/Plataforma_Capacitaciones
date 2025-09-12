@@ -21,7 +21,7 @@ class AdminController extends Controller
     /**
      * Almacena un nuevo curso con sus videos
      */
-  public function storeCourse(Request $request)
+    public function storeCourse(Request $request)
     {
         $validated = $request->validate([
             'titulo' => 'required|string|max:255',
@@ -30,7 +30,15 @@ class AdminController extends Controller
             'estado' => 'required|boolean',
             'videos' => 'required|array',
             'videos.*.titulo' => 'required_with:videos|string|max:255',
-            'videos.*.archivo' => 'required_with:videos|file|mimes:mp4,avi,mov,wmv,flv|max:102400',
+'videos.*.url_youtube' => [
+    'required_with:videos',
+    'url',
+    function ($attribute, $value, $fail) {
+        if (!$this->validateYouTubeUrl($value)) {
+            $fail('La URL debe ser una URL válida de YouTube.');
+        }
+    },
+],
             'videos.*.orden' => 'required|integer|min:1',
             'videos.*.estado' => 'required_with:videos|boolean'
         ]);
@@ -38,10 +46,9 @@ class AdminController extends Controller
         try {
             DB::beginTransaction();
 
-            // Configuración de rutas explícitas
-            $disco = 'public'; // Usa el disco 'public' configurado en filesystems.php
+            // Configuración de rutas para imágenes
+            $disco = 'public';
             $rutaImagenes = 'images/courses/';
-            $rutaVideos = 'videos/';
 
             // Procesar imagen del curso
             $nombreImagen = null;
@@ -61,19 +68,21 @@ class AdminController extends Controller
                 'fecha_actualizacion' => now()
             ]);
 
-            // Procesar videos
+            // Procesar videos con URLs de YouTube
             $videosCreados = 0;
             if (!empty($validated['videos'])) {
                 foreach ($validated['videos'] as $videoData) {
-                    $nombreVideo = Str::slug($videoData['titulo']).'_'.time().'.'.$videoData['archivo']->extension();
+                    // Validar y limpiar URL de YouTube
+                    $youtubeUrl = $this->validateYouTubeUrl($videoData['url_youtube']);
                     
-                    // Almacenamiento explícito en la ubicación correcta
-                    Storage::disk($disco)->putFileAs($rutaVideos, $videoData['archivo'], $nombreVideo);
+                    if (!$youtubeUrl) {
+                        throw new \Exception("URL de YouTube inválida: " . $videoData['url_youtube']);
+                    }
 
                     DB::table('videos')->insert([
                         'curso_id' => $cursoId,
                         'titulo' => $videoData['titulo'],
-                        'url' => $nombreVideo,
+                        'url' => $youtubeUrl, // Ahora guarda la URL de YouTube
                         'duracion' => null,
                         'orden' => $videoData['orden'] ?? ($videosCreados + 1),
                         'estado' => $videoData['estado'] ?? false,
@@ -87,13 +96,55 @@ class AdminController extends Controller
             DB::commit();
             
             return redirect()->back()
-                   ->with('success', "Curso creado con {$videosCreados} videos");
+                   ->with('success', "Curso creado exitosamente con {$videosCreados} videos de YouTube");
 
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
                    ->withInput()
-                   ->with('error', 'Error: '.$e->getMessage());
+                   ->with('error', 'Error al crear curso: '.$e->getMessage());
         }
+    }
+
+    /**
+     * Valida y extrae ID de video de YouTube
+     */
+    private function validateYouTubeUrl($url)
+    {
+        // Patrones para diferentes formatos de URL de YouTube
+        $patterns = [
+            '/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/',
+            '/youtube\.com\/watch\?.*v=([^&\n?#]+)/'
+        ];
+        
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $url, $matches)) {
+                $videoId = $matches[1];
+                // Retornar URL limpia en formato estándar
+                return "https://www.youtube.com/watch?v=" . $videoId;
+            }
+        }
+        
+        return false; // URL no válida
+    }
+
+    /**
+     * Extrae el ID del video de YouTube para usar en el player
+     */
+    public function getYouTubeVideoId($url)
+    {
+        $patterns = [
+            '/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/',
+            '/youtube\.com\/watch\?.*v=([^&\n?#]+)/',
+            '/youtube\.com\/watch\?.*[&?]v=([^&\n?#]+)/' // Para URLs con parámetros adicionales
+        ];
+        
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $url, $matches)) {
+                return $matches[1];
+            }
+        }
+        
+        return null;
     }
 }
