@@ -100,7 +100,105 @@
                     style="--target-width: {{ $porcentajeProgreso }}%; width: {{ $porcentajeProgreso }}%"
                 ></div>
             </div>
-
+<!-- SECCIÓN DE EXAMEN - SOLO para usuarios inscritos -->
+@if($estaInscrito && $examenCurso)
+<div class="mb-8 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-purple-200 dark:border-gray-700 shadow-lg">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex-1">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Examen Final: {{ $examenCurso->titulo }}
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-300">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span><strong>Duración:</strong> {{ $examenCurso->duracion_minutos }} min</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <span><strong>Intentos:</strong> {{ $examenCurso->intentos_permitidos }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span><strong>Aprobación:</strong> {{ $examenCurso->porcentaje_aprobacion }}%</span>
+                </div>
+            </div>
+            
+            @if($examenCurso->descripcion)
+                <p class="mt-3 text-gray-700 dark:text-gray-300 text-sm">{{ $examenCurso->descripcion }}</p>
+            @endif
+        </div>
+        
+        <div class="flex flex-col gap-3">
+            @if($puedeRealizarExamen)
+                <!-- Botón para realizar examen (habilitado) -->
+                @if($tieneExamenPendiente)
+                    <a href="{{ route('examenes.continuar', $examenCurso->id) }}" 
+                       class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Continuar Examen Pendiente
+                    </a>
+                @else
+                    <a href="{{ route('examenes.tomar', $examenCurso->id) }}" 
+                       class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Realizar Examen
+                    </a>
+                @endif
+            @else
+                <!-- Botón deshabilitado (no ha completado videos) -->
+                <button disabled
+                       class="bg-gray-400 cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 opacity-75">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    Completa todos los videos para habilitar
+                </button>
+            @endif
+            
+            <!-- Mostrar mejor calificación si existe -->
+            @if($mejorCalificacion > 0)
+                <div class="text-center">
+                    <span class="text-sm font-medium {{ $mejorCalificacion >= $examenCurso->porcentaje_aprobacion ? 'text-green-600' : 'text-yellow-600' }}">
+                        Mejor calificación: <strong>{{ $mejorCalificacion }}%</strong>
+                        @if($mejorCalificacion >= $examenCurso->porcentaje_aprobacion)
+                            ✅ Aprobado
+                        @else
+                            ⚠️ Por mejorar
+                        @endif
+                    </span>
+                </div>
+            @endif
+        </div>
+    </div>
+    
+    <!-- Mensaje informativo sobre requisitos -->
+    @if(!$puedeRealizarExamen)
+        <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <p class="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Debes completar <strong>{{ $totalVideos - $videosCompletados }} video(s) más</strong> para habilitar el examen.
+            </p>
+        </div>
+    @endif
+</div>
+@endif
             <!-- Grid de videos -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                @forelse($videos as $video)

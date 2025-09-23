@@ -82,6 +82,15 @@ Route::get('/mis-cursos', [CursoNoInscritoController::class, 'misCursos'])->name
 Route::get('/cursos-completados', [CursoNoInscritoController::class, 'cursosCompletados'])->name('cursos.completados');
 Route::get('/buscar-cursos', [CursoNoInscritoController::class, 'buscarCursos'])->name('cursos.buscar');
 
+
+
+//rutas para crear examenes 
+// Rutas para exámenes
+Route::post('/examenes/{examen}/iniciar', [ExamenController::class, 'iniciar'])->name('examenes.iniciar');
+Route::post('/examenes/{examen}/enviar', [ExamenController::class, 'enviar'])->name('examenes.enviar');
+Route::get('/examenes/{examen}/resultado', [ExamenController::class, 'resultado'])->name('examenes.resultado');
+Route::get('/cursos/{curso}/examenes', [ExamenController::class, 'index'])->name('examenes.index');
+
 // En routes/web.php
 Route::get('/test-puppeteer', [PuppeteerTestController::class, 'test']);
 // En tu web.php

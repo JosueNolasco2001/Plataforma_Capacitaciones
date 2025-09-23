@@ -245,7 +245,7 @@ public function mostrarVideos($id)
     }
 
     try {
-        // Obtener datos del curso
+        // Obtener datos del curso (código existente)
         $curso = DB::selectOne("
             SELECT c.*, u.name as instructor_nombre
             FROM cursos c
@@ -257,7 +257,7 @@ public function mostrarVideos($id)
             return redirect()->route('cursos.disponibles')->with('error', 'Curso no encontrado');
         }
 
-        // Verificar si el usuario está inscrito en el curso
+        // Verificar si el usuario está inscrito en el curso (código existente)
         $inscripcion = DB::selectOne("
             SELECT * FROM inscripciones 
             WHERE usuario_id = ? AND curso_id = ?
@@ -265,7 +265,7 @@ public function mostrarVideos($id)
 
         $estaInscrito = !is_null($inscripcion);
 
-        // Obtener videos del curso con estado de progreso
+        // Obtener videos del curso con estado de progreso (código existente)
         $videos = DB::select("
             SELECT v.*,
                    COALESCE(p.completado, 0) as completado,
@@ -276,7 +276,7 @@ public function mostrarVideos($id)
             ORDER BY v.orden ASC
         ", [$usuarioId, $id]);
 
-        // Calcular progreso del curso
+        // Calcular progreso del curso (código existente)
         $totalVideos = count($videos);
         $videosCompletados = 0;
 
@@ -290,9 +290,41 @@ public function mostrarVideos($id)
 
         $porcentajeProgreso = $totalVideos > 0 ? round(($videosCompletados / $totalVideos) * 100) : 0;
 
-        // *** NUEVA LÓGICA: Generar diploma automáticamente si está 100% completado ***
+        // *** NUEVO: Verificar si hay examen para este curso y si puede realizarlo ***
+        $examenCurso = DB::selectOne("
+            SELECT * FROM examenes 
+            WHERE curso_id = ? AND estado = 1
+            ORDER BY orden ASC 
+            LIMIT 1
+        ", [$id]);
+
+        $puedeRealizarExamen = false;
+        $tieneExamenPendiente = false;
+        $mejorCalificacion = 0;
+
+        if ($examenCurso && $estaInscrito) {
+            // Verificar si completó todos los videos
+            $puedeRealizarExamen = ($videosCompletados >= $totalVideos);
+            
+            // Verificar intentos previos
+            $resultadosExamen = DB::select("
+                SELECT * FROM resultados_examenes 
+                WHERE usuario_id = ? AND examen_id = ?
+                ORDER BY intento DESC
+            ", [$usuarioId, $examenCurso->id]);
+
+            if (count($resultadosExamen) > 0) {
+                // Obtener la mejor calificación
+                $mejorCalificacion = max(array_column($resultadosExamen, 'calificacion'));
+                
+                // Verificar si tiene intentos disponibles
+                $ultimoIntento = $resultadosExamen[0];
+                $tieneExamenPendiente = ($ultimoIntento->completado == 0);
+            }
+        }
+
+        // *** Lógica existente del diploma ***
         $diplomaGenerado = false;
-        
         if ($porcentajeProgreso == 100 && $estaInscrito) {
             $diplomaGenerado = $this->generarDiplomaAutomatico($curso, $totalVideos, $videosCompletados, $usuarioId);
         }
@@ -304,7 +336,12 @@ public function mostrarVideos($id)
             'estaInscrito', 
             'videosCompletados', 
             'totalVideos',
-            'diplomaGenerado' // Nueva variable para la vista
+            'diplomaGenerado',
+            // Nuevas variables para el examen
+            'examenCurso',
+            'puedeRealizarExamen',
+            'tieneExamenPendiente',
+            'mejorCalificacion'
         ));
 
     } catch (\Exception $e) {

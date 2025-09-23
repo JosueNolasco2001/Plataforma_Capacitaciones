@@ -100,6 +100,30 @@
                         </div>
                     </div>
 
+                    <!-- Sección de Exámenes -->
+<div class="border-t pt-6">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-medium text-gray-900">
+            <i class="fas fa-file-alt text-purple-600 mr-2"></i>
+            Exámenes del Curso
+        </h3>
+        <button type="button" id="addExamBtn" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors">
+            <i class="fas fa-plus mr-2"></i>
+            Agregar Examen
+        </button>
+    </div>
+
+    <div id="examsContainer">
+        <!-- Los exámenes se agregarán dinámicamente aquí -->
+    </div>
+
+    <!-- Mensaje cuando no hay exámenes -->
+    <div id="noExamsMessage" class="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+        <i class="fas fa-file-alt text-4xl mb-4"></i>
+        <p>No hay exámenes agregados. Haz clic en "Agregar Examen" para comenzar.</p>
+    </div>
+</div>
+
                     <!-- Botones de acción -->
                     <div class="flex justify-between items-center mt-8 pt-6 border-t">
                         <a href="#" class="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition-colors">
@@ -172,6 +196,177 @@
                 </select>
             </div>
         </div>
+    </div>
+</template>
+
+<!-- Template para exámenes -->
+<template id="examTemplate">
+    <div class="exam-item bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6" data-exam-index="">
+        <div class="flex justify-between items-start mb-4">
+            <h4 class="text-md font-medium text-gray-900">Examen #<span class="exam-number"></span></h4>
+            <button type="button" class="remove-exam text-red-600 hover:text-red-800 p-1">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <!-- Título del examen -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Título del Examen *
+                </label>
+                <input type="text" name="" required
+                    class="exam-titulo w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    placeholder="Ej: Examen Final - Evaluación General">
+            </div>
+
+            <!-- Descripción -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Descripción
+                </label>
+                <textarea name="" rows="2"
+                    class="exam-descripcion w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    placeholder="Describe el contenido del examen..."></textarea>
+            </div>
+
+            <!-- Duración -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Duración (minutos) *
+                </label>
+                <input type="number" name="" min="5" max="180" value="30" required
+                    class="exam-duracion w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Intentos permitidos -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Intentos Permitidos *
+                </label>
+                <input type="number" name="" min="1" max="10" value="1" required
+                    class="exam-intentos w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Porcentaje de aprobación -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    % Aprobación *
+                </label>
+                <input type="number" name="" min="50" max="100" value="70" required
+                    class="exam-porcentaje w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Estado del examen -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Estado del Examen
+                </label>
+                <select name="" class="exam-estado w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <option value="0">Borrador</option>
+                    <option value="1" selected>Publicado</option>
+                </select>
+            </div>
+
+            <!-- Orden -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Orden
+                </label>
+                <input type="number" name="" min="1"
+                    class="exam-orden w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+        </div>
+
+        <!-- Sección de Preguntas -->
+        <div class="border-t pt-4">
+            <div class="flex justify-between items-center mb-4">
+                <h5 class="text-sm font-medium text-gray-900">
+                    <i class="fas fa-question-circle text-green-600 mr-2"></i>
+                    Preguntas del Examen
+                </h5>
+                <button type="button" class="add-question bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 transition-colors text-sm">
+                    <i class="fas fa-plus mr-1"></i>
+                    Agregar Pregunta
+                </button>
+            </div>
+
+            <div class="questions-container space-y-4">
+                <!-- Las preguntas se agregarán aquí -->
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template para preguntas -->
+<template id="questionTemplate">
+    <div class="question-item bg-white border border-gray-200 rounded-lg p-4" data-question-index="">
+        <div class="flex justify-between items-start mb-3">
+            <h6 class="text-sm font-medium text-gray-900">Pregunta #<span class="question-number"></span></h6>
+            <button type="button" class="remove-question text-red-600 hover:text-red-800 p-1 text-sm">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="space-y-3">
+            <!-- Texto de la pregunta -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Pregunta *
+                </label>
+                <textarea name="" rows="2" required
+                    class="question-text w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    placeholder="Escribe la pregunta..."></textarea>
+            </div>
+
+            <!-- Tipo de pregunta -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Tipo de Pregunta
+                </label>
+                <select name="" class="question-type w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <option value="multiple">Opción Múltiple</option>
+                    <option value="verdadero_falso">Verdadero/Falso</option>
+                    <option value="texto">Respuesta Texto</option>
+                </select>
+            </div>
+
+            <!-- Puntos -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Puntos
+                </label>
+                <input type="number" name="" min="1" max="10" value="1"
+                    class="question-points w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Opciones de respuesta (solo para múltiple y verdadero/falso) -->
+            <div class="options-container hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Opciones de Respuesta
+                </label>
+                <div class="options-list space-y-2">
+                    <!-- Las opciones se agregarán aquí -->
+                </div>
+                <button type="button" class="add-option mt-2 bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 transition-colors text-sm">
+                    <i class="fas fa-plus mr-1"></i>
+                    Agregar Opción
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template para opciones -->
+<template id="optionTemplate">
+    <div class="option-item flex items-center space-x-2">
+        <input type="text" name="" placeholder="Opción de respuesta" required
+            class="option-text flex-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
+        <input type="radio" name="" class="option-correct">
+        <label class="text-sm text-gray-700">Correcta</label>
+        <button type="button" class="remove-option text-red-600 hover:text-red-800 p-1">
+            <i class="fas fa-times"></i>
+        </button>
     </div>
 </template>
 
@@ -341,6 +536,259 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
+    });
+});
+
+
+// Variables para exámenes
+const addExamBtn = document.getElementById('addExamBtn');
+const examsContainer = document.getElementById('examsContainer');
+const noExamsMessage = document.getElementById('noExamsMessage');
+const examTemplate = document.getElementById('examTemplate');
+const questionTemplate = document.getElementById('questionTemplate');
+const optionTemplate = document.getElementById('optionTemplate');
+let examCount = 0;
+
+// Agregar examen
+addExamBtn.addEventListener('click', function() {
+    examCount++;
+    const examElement = examTemplate.content.cloneNode(true);
+    
+    // Configurar examen
+    const examIndex = examCount - 1;
+    configureExamElement(examElement, examIndex);
+    
+    examsContainer.appendChild(examElement);
+    toggleNoExamsMessage();
+});
+
+function configureExamElement(examElement, examIndex) {
+    // Configurar número y nombres
+    examElement.querySelector('.exam-number').textContent = examCount;
+    examElement.querySelector('.exam-titulo').name = `examenes[${examIndex}][titulo]`;
+    examElement.querySelector('.exam-descripcion').name = `examenes[${examIndex}][descripcion]`;
+    examElement.querySelector('.exam-duracion').name = `examenes[${examIndex}][duracion_minutos]`;
+    examElement.querySelector('.exam-intentos').name = `examenes[${examIndex}][intentos_permitidos]`;
+    examElement.querySelector('.exam-porcentaje').name = `examenes[${examIndex}][porcentaje_aprobacion]`;
+    examElement.querySelector('.exam-estado').name = `examenes[${examIndex}][estado]`;
+    examElement.querySelector('.exam-orden').name = `examenes[${examIndex}][orden]`;
+    examElement.querySelector('.exam-orden').value = examCount;
+    
+    examElement.querySelector('.exam-item').setAttribute('data-exam-index', examIndex);
+    
+    // Evento para eliminar examen
+    examElement.querySelector('.remove-exam').addEventListener('click', function() {
+        this.closest('.exam-item').remove();
+        updateExamNumbers();
+        toggleNoExamsMessage();
+    });
+    
+    // Evento para agregar pregunta
+    examElement.querySelector('.add-question').addEventListener('click', function() {
+        addQuestionToExam(this.closest('.exam-item'));
+    });
+    
+    // Manejar cambio de tipo de pregunta
+    examElement.querySelector('.question-type')?.addEventListener('change', function() {
+        toggleOptionsContainer(this);
+    });
+}
+
+function addQuestionToExam(examElement) {
+    const questionsContainer = examElement.querySelector('.questions-container');
+    const questionElement = questionTemplate.content.cloneNode(true);
+    const examIndex = examElement.getAttribute('data-exam-index');
+    const questionCount = questionsContainer.querySelectorAll('.question-item').length;
+    
+    configureQuestionElement(questionElement, examIndex, questionCount);
+    questionsContainer.appendChild(questionElement);
+}
+
+function configureQuestionElement(questionElement, examIndex, questionIndex) {
+    questionElement.querySelector('.question-number').textContent = questionIndex + 1;
+    
+    // Configurar nombres
+    questionElement.querySelector('.question-text').name = `examenes[${examIndex}][preguntas][${questionIndex}][pregunta]`;
+    questionElement.querySelector('.question-type').name = `examenes[${examIndex}][preguntas][${questionIndex}][tipo]`;
+    questionElement.querySelector('.question-points').name = `examenes[${examIndex}][preguntas][${questionIndex}][puntos]`;
+    
+    questionElement.querySelector('.question-item').setAttribute('data-question-index', questionIndex);
+    
+    // Evento para eliminar pregunta
+    questionElement.querySelector('.remove-question').addEventListener('click', function() {
+        this.closest('.question-item').remove();
+        updateQuestionNumbers(this.closest('.exam-item'));
+    });
+    
+    // Evento para tipo de pregunta
+    const typeSelect = questionElement.querySelector('.question-type');
+    typeSelect.addEventListener('change', function() {
+        toggleOptionsContainer(this);
+    });
+    
+    // Evento para agregar opciones
+    questionElement.querySelector('.add-option')?.addEventListener('click', function() {
+        addOptionToQuestion(this.closest('.question-item'));
+    });
+}
+
+function addOptionToQuestion(questionElement) {
+    const optionsContainer = questionElement.querySelector('.options-list');
+    const optionElement = optionTemplate.content.cloneNode(true);
+    const examIndex = questionElement.closest('.exam-item').getAttribute('data-exam-index');
+    const questionIndex = questionElement.getAttribute('data-question-index');
+    const optionCount = optionsContainer.querySelectorAll('.option-item').length;
+    
+    configureOptionElement(optionElement, examIndex, questionIndex, optionCount);
+    optionsContainer.appendChild(optionElement);
+}
+
+function configureOptionElement(optionElement, examIndex, questionIndex, optionIndex) {
+    const optionText = optionElement.querySelector('.option-text');
+    const optionCorrect = optionElement.querySelector('.option-correct');
+    
+    optionText.name = `examenes[${examIndex}][preguntas][${questionIndex}][opciones][${optionIndex}][opcion]`;
+    optionCorrect.name = `examenes[${examIndex}][preguntas][${questionIndex}][opciones_correctas]`;
+    optionCorrect.value = optionIndex;
+    
+    // Evento para eliminar opción
+    optionElement.querySelector('.remove-option').addEventListener('click', function() {
+        this.closest('.option-item').remove();
+    });
+}
+
+function toggleOptionsContainer(selectElement) {
+    const questionItem = selectElement.closest('.question-item');
+    const optionsContainer = questionItem.querySelector('.options-container');
+    const optionsList = questionItem.querySelector('.options-list');
+    
+    if (selectElement.value === 'texto') {
+        optionsContainer.classList.add('hidden');
+        optionsList.innerHTML = '';
+    } else {
+        optionsContainer.classList.remove('hidden');
+        // Agregar opciones básicas para verdadero/falso
+        if (selectElement.value === 'verdadero_falso' && optionsList.children.length === 0) {
+            addOptionToQuestion(questionItem);
+            addOptionToQuestion(questionItem);
+        }
+    }
+}
+
+function updateExamNumbers() {
+    const examItems = examsContainer.querySelectorAll('.exam-item');
+    examItems.forEach((item, index) => {
+        item.querySelector('.exam-number').textContent = index + 1;
+        item.querySelector('.exam-orden').value = index + 1;
+        
+        // Actualizar nombres
+        const baseName = `examenes[${index}]`;
+        item.querySelector('.exam-titulo').name = `${baseName}[titulo]`;
+        item.querySelector('.exam-descripcion').name = `${baseName}[descripcion]`;
+        item.querySelector('.exam-duracion').name = `${baseName}[duracion_minutos]`;
+        item.querySelector('.exam-intentos').name = `${baseName}[intentos_permitidos]`;
+        item.querySelector('.exam-porcentaje').name = `${baseName}[porcentaje_aprobacion]`;
+        item.querySelector('.exam-estado').name = `${baseName}[estado]`;
+        item.querySelector('.exam-orden').name = `${baseName}[orden]`;
+        
+        item.setAttribute('data-exam-index', index);
+        
+        // Actualizar números de preguntas
+        updateQuestionNumbers(item);
+    });
+    examCount = examItems.length;
+}
+
+function updateQuestionNumbers(examElement) {
+    const questions = examElement.querySelectorAll('.question-item');
+    const examIndex = examElement.getAttribute('data-exam-index');
+    
+    questions.forEach((question, qIndex) => {
+        question.querySelector('.question-number').textContent = qIndex + 1;
+        
+        const baseName = `examenes[${examIndex}][preguntas][${qIndex}]`;
+        question.querySelector('.question-text').name = `${baseName}[pregunta]`;
+        question.querySelector('.question-type').name = `${baseName}[tipo]`;
+        question.querySelector('.question-points').name = `${baseName}[puntos]`;
+        
+        question.setAttribute('data-question-index', qIndex);
+        
+        // Actualizar opciones
+        updateOptionNames(question, examIndex, qIndex);
+    });
+}
+
+function updateOptionNames(questionElement, examIndex, questionIndex) {
+    const options = questionElement.querySelectorAll('.option-item');
+    
+    options.forEach((option, oIndex) => {
+        const optionText = option.querySelector('.option-text');
+        const optionCorrect = option.querySelector('.option-correct');
+        
+        optionText.name = `examenes[${examIndex}][preguntas][${questionIndex}][opciones][${oIndex}][opcion]`;
+        optionCorrect.name = `examenes[${examIndex}][preguntas][${questionIndex}][opciones_correctas]`;
+        optionCorrect.value = oIndex;
+    });
+}
+
+function toggleNoExamsMessage() {
+    const hasExams = examsContainer.querySelectorAll('.exam-item').length > 0;
+    noExamsMessage.style.display = hasExams ? 'none' : 'block';
+}
+
+// Validación adicional para el formulario
+document.getElementById('courseForm').addEventListener('submit', function(e) {
+    // Validación de exámenes
+    const exams = document.querySelectorAll('.exam-item');
+    
+    exams.forEach((exam, index) => {
+        const titulo = exam.querySelector('.exam-titulo').value.trim();
+        const questions = exam.querySelectorAll('.question-item');
+        
+        if (!titulo) {
+            e.preventDefault();
+            exam.style.border = '2px solid red';
+            alert(`Examen #${index + 1}: Falta el título`);
+            return;
+        }
+        
+        if (questions.length === 0) {
+            e.preventDefault();
+            exam.style.border = '2px solid red';
+            alert(`Examen #${index + 1}: Debe tener al menos una pregunta`);
+            return;
+        }
+        
+        // Validar preguntas
+        questions.forEach((question, qIndex) => {
+            const preguntaText = question.querySelector('.question-text').value.trim();
+            const tipo = question.querySelector('.question-type').value;
+            const options = question.querySelectorAll('.option-item');
+            
+            if (!preguntaText) {
+                e.preventDefault();
+                question.style.border = '2px solid red';
+                alert(`Examen #${index + 1}, Pregunta #${qIndex + 1}: Falta el texto de la pregunta`);
+                return;
+            }
+            
+            if (tipo !== 'texto' && options.length < 2) {
+                e.preventDefault();
+                question.style.border = '2px solid red';
+                alert(`Examen #${index + 1}, Pregunta #${qIndex + 1}: Debe tener al menos 2 opciones`);
+                return;
+            }
+            
+            if (tipo !== 'texto') {
+                const hasCorrect = Array.from(options).some(opt => opt.querySelector('.option-correct').checked);
+                if (!hasCorrect) {
+                    e.preventDefault();
+                    question.style.border = '2px solid red';
+                    alert(`Examen #${index + 1}, Pregunta #${qIndex + 1}: Debe tener una opción correcta`);
+                    return;
+                }
+            }
+        });
     });
 });
 </script>
