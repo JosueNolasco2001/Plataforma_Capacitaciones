@@ -297,8 +297,8 @@
         </div>
     </div>
 </template>
-
-<!-- Template para preguntas -->
+<!-- Template para preguntas - SOLO VERDADERO/FALSO -->
+<!-- Template para preguntas - SOLO VERDADERO/FALSO CORREGIDO -->
 <template id="questionTemplate">
     <div class="question-item bg-white border border-gray-200 rounded-lg p-4" data-question-index="">
         <div class="flex justify-between items-start mb-3">
@@ -319,17 +319,8 @@
                     placeholder="Escribe la pregunta..."></textarea>
             </div>
 
-            <!-- Tipo de pregunta -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Tipo de Pregunta
-                </label>
-                <select name="" class="question-type w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    <option value="multiple">Opción Múltiple</option>
-                    <option value="verdadero_falso">Verdadero/Falso</option>
-                    <option value="texto">Respuesta Texto</option>
-                </select>
-            </div>
+            <!-- Tipo de pregunta FIJO en verdadero/falso -->
+            <input type="hidden" name="" class="question-type" value="verdadero_falso">
 
             <!-- Puntos -->
             <div>
@@ -340,18 +331,26 @@
                     class="question-points w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
             </div>
 
-            <!-- Opciones de respuesta (solo para múltiple y verdadero/falso) -->
-            <div class="options-container hidden">
+            <!-- Opciones de respuesta VERDADERO/FALSO - CORREGIDO -->
+            <div class="options-container">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Opciones de Respuesta
+                    Respuesta Correcta *
                 </label>
                 <div class="options-list space-y-2">
-                    <!-- Las opciones se agregarán aquí -->
+                    <!-- Opciones predefinidas para verdadero/falso -->
+                    <div class="option-item flex items-center space-x-2">
+                        <input type="text" name="" value="Verdadero" readonly
+                            class="option-text flex-1 border-gray-300 rounded-md shadow-sm bg-gray-100 text-sm">
+                        <input type="radio" name="" class="option-correct" value="verdadero">
+                        <label class="text-sm text-gray-700">Correcta</label>
+                    </div>
+                    <div class="option-item flex items-center space-x-2">
+                        <input type="text" name="" value="Falso" readonly
+                            class="option-text flex-1 border-gray-300 rounded-md shadow-sm bg-gray-100 text-sm">
+                        <input type="radio" name="" class="option-correct" value="falso">
+                        <label class="text-sm text-gray-700">Correcta</label>
+                    </div>
                 </div>
-                <button type="button" class="add-option mt-2 bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 transition-colors text-sm">
-                    <i class="fas fa-plus mr-1"></i>
-                    Agregar Opción
-                </button>
             </div>
         </div>
     </div>
@@ -454,63 +453,51 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Validación del formulario - ACTUALIZADO PARA YOUTUBE
-    document.getElementById('courseForm').addEventListener('submit', function(e) {
-        const videos = document.querySelectorAll('.video-item');
+ // Validación adicional para el formulario
+document.getElementById('courseForm').addEventListener('submit', function(e) {
+    // Validación de exámenes
+    const exams = document.querySelectorAll('.exam-item');
+    
+    exams.forEach((exam, index) => {
+        const titulo = exam.querySelector('.exam-titulo').value.trim();
+        const questions = exam.querySelectorAll('.question-item');
         
-        // Validación estricta: Bloquear si no hay videos
-        if (videos.length === 0) {
+        if (!titulo) {
             e.preventDefault();
-            noVideosMessage.innerHTML = `
-                <i class="fas fa-exclamation-circle text-red-500 text-4xl mb-4"></i>
-                <p class="text-red-600 font-bold">¡Error!</p>
-                <p>Debes agregar al menos un video para crear el curso.</p>
-            `;
-            noVideosMessage.style.display = 'block';
-            noVideosMessage.scrollIntoView({ behavior: 'smooth' });
+            exam.style.border = '2px solid red';
+            alert(`Examen #${index + 1}: Falta el título`);
             return;
         }
         
-        // Validar que todos los videos tengan título y URL válida - ACTUALIZADO
-        let hasError = false;
-        let errorMessages = [];
+        if (questions.length === 0) {
+            e.preventDefault();
+            exam.style.border = '2px solid red';
+            alert(`Examen #${index + 1}: Debe tener al menos una pregunta`);
+            return;
+        }
         
-        videos.forEach((video, index) => {
-            const titulo = video.querySelector('.video-titulo').value.trim();
-            const url = video.querySelector('.video-url').value.trim(); // CAMBIO: era video-archivo.files[0]
+        // Validar preguntas VERDADERO/FALSO
+        questions.forEach((question, qIndex) => {
+            const preguntaText = question.querySelector('.question-text').value.trim();
+            const options = question.querySelectorAll('.option-item');
+            const selectedOption = question.querySelector('.option-correct:checked');
             
-            // Restablecer estilo
-            video.style.border = '';
-            
-            if (!titulo) {
-                hasError = true;
-                video.style.border = '2px solid red';
-                errorMessages.push(`Video #${index + 1}: Falta el título`);
+            if (!preguntaText) {
+                e.preventDefault();
+                question.style.border = '2px solid red';
+                alert(`Examen #${index + 1}, Pregunta #${qIndex + 1}: Falta el texto de la pregunta`);
+                return;
             }
             
-            if (!url) {
-                hasError = true;
-                video.style.border = '2px solid red';
-                errorMessages.push(`Video #${index + 1}: Falta la URL de YouTube`);
-            } else if (!isValidYouTubeUrl(url)) {
-                hasError = true;
-                video.style.border = '2px solid red';
-                errorMessages.push(`Video #${index + 1}: URL de YouTube no válida`);
+            if (!selectedOption) {
+                e.preventDefault();
+                question.style.border = '2px solid red';
+                alert(`Examen #${index + 1}, Pregunta #${qIndex + 1}: Debes seleccionar la respuesta correcta (Verdadero o Falso)`);
+                return;
             }
         });
-        
-        if (hasError) {
-            e.preventDefault();
-            alert('Errores encontrados:\n\n' + errorMessages.join('\n') + '\n\nCorrige los errores e intenta de nuevo.');
-            return;
-        }
-        
-        // Mostrar confirmación antes de enviar
-        const totalVideos = videos.length;
-        if (!confirm(`¿Confirmas crear el curso con ${totalVideos} video${totalVideos > 1 ? 's' : ''}?`)) {
-            e.preventDefault();
-            return;
-        }
     });
+});
 
     // Validación en tiempo real de URLs de YouTube
     document.addEventListener('input', function(e) {
@@ -607,10 +594,24 @@ function addQuestionToExam(examElement) {
 function configureQuestionElement(questionElement, examIndex, questionIndex) {
     questionElement.querySelector('.question-number').textContent = questionIndex + 1;
     
-    // Configurar nombres
+    // Configurar nombres - ESTRUCTURA CORREGIDA
     questionElement.querySelector('.question-text').name = `examenes[${examIndex}][preguntas][${questionIndex}][pregunta]`;
     questionElement.querySelector('.question-type').name = `examenes[${examIndex}][preguntas][${questionIndex}][tipo]`;
     questionElement.querySelector('.question-points').name = `examenes[${examIndex}][preguntas][${questionIndex}][puntos]`;
+    
+    // Configurar opciones de verdadero/falso
+    const options = questionElement.querySelectorAll('.option-item');
+    options.forEach((option, optionIndex) => {
+        const optionText = option.querySelector('.option-text');
+        const optionCorrect = option.querySelector('.option-correct');
+        
+        // Nombres corregidos para guardar correctamente
+        optionText.name = `examenes[${examIndex}][preguntas][${questionIndex}][opciones][${optionIndex}][opcion]`;
+        optionCorrect.name = `examenes[${examIndex}][preguntas][${questionIndex}][opcion_correcta]`; // Mismo nombre para ambos radios
+        
+        // Valor único para cada opción
+        optionCorrect.value = optionIndex === 0 ? 'verdadero' : 'falso';
+    });
     
     questionElement.querySelector('.question-item').setAttribute('data-question-index', questionIndex);
     
@@ -620,15 +621,28 @@ function configureQuestionElement(questionElement, examIndex, questionIndex) {
         updateQuestionNumbers(this.closest('.exam-item'));
     });
     
-    // Evento para tipo de pregunta
-    const typeSelect = questionElement.querySelector('.question-type');
-    typeSelect.addEventListener('change', function() {
-        toggleOptionsContainer(this);
+    // Asegurar que solo una opción pueda ser seleccionada
+    const radioButtons = questionElement.querySelectorAll('.option-correct');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            radioButtons.forEach(r => {
+                if (r !== this) r.checked = false;
+            });
+        });
     });
+}
+
+// Eliminar función toggleOptionsContainer ya que no es necesaria
+function updateOptionNames(questionElement, examIndex, questionIndex) {
+    const options = questionElement.querySelectorAll('.option-item');
     
-    // Evento para agregar opciones
-    questionElement.querySelector('.add-option')?.addEventListener('click', function() {
-        addOptionToQuestion(this.closest('.question-item'));
+    options.forEach((option, oIndex) => {
+        const optionText = option.querySelector('.option-text');
+        const optionCorrect = option.querySelector('.option-correct');
+        
+        optionText.name = `examenes[${examIndex}][preguntas][${questionIndex}][opciones][${oIndex}][opcion]`;
+        optionCorrect.name = `examenes[${examIndex}][preguntas][${questionIndex}][opcion_correcta]`;
+        optionCorrect.value = oIndex === 0 ? 'verdadero' : 'falso';
     });
 }
 
@@ -657,23 +671,7 @@ function configureOptionElement(optionElement, examIndex, questionIndex, optionI
     });
 }
 
-function toggleOptionsContainer(selectElement) {
-    const questionItem = selectElement.closest('.question-item');
-    const optionsContainer = questionItem.querySelector('.options-container');
-    const optionsList = questionItem.querySelector('.options-list');
-    
-    if (selectElement.value === 'texto') {
-        optionsContainer.classList.add('hidden');
-        optionsList.innerHTML = '';
-    } else {
-        optionsContainer.classList.remove('hidden');
-        // Agregar opciones básicas para verdadero/falso
-        if (selectElement.value === 'verdadero_falso' && optionsList.children.length === 0) {
-            addOptionToQuestion(questionItem);
-            addOptionToQuestion(questionItem);
-        }
-    }
-}
+
 
 function updateExamNumbers() {
     const examItems = examsContainer.querySelectorAll('.exam-item');
@@ -718,18 +716,7 @@ function updateQuestionNumbers(examElement) {
     });
 }
 
-function updateOptionNames(questionElement, examIndex, questionIndex) {
-    const options = questionElement.querySelectorAll('.option-item');
-    
-    options.forEach((option, oIndex) => {
-        const optionText = option.querySelector('.option-text');
-        const optionCorrect = option.querySelector('.option-correct');
-        
-        optionText.name = `examenes[${examIndex}][preguntas][${questionIndex}][opciones][${oIndex}][opcion]`;
-        optionCorrect.name = `examenes[${examIndex}][preguntas][${questionIndex}][opciones_correctas]`;
-        optionCorrect.value = oIndex;
-    });
-}
+
 
 function toggleNoExamsMessage() {
     const hasExams = examsContainer.querySelectorAll('.exam-item').length > 0;
