@@ -55,6 +55,8 @@ public function storeCourse(Request $request)
         'examenes.*.preguntas.*.tipo' => 'required_with:examenes.*.preguntas|in:multiple,verdadero_falso,texto',
         'examenes.*.preguntas.*.puntos' => 'sometimes|integer|min:1|max:10',
         'examenes.*.preguntas.*.orden' => 'sometimes|integer|min:0',
+        // CAMBIO: Agregar validación para opcion_correcta
+        'examenes.*.preguntas.*.opcion_correcta' => 'required_if:examenes.*.preguntas.*.tipo,verdadero_falso|in:verdadero,falso',
         'examenes.*.preguntas.*.opciones' => 'sometimes|array',
         'examenes.*.preguntas.*.opciones.*.opcion' => 'required_with:examenes.*.preguntas.*.opciones|string'
     ]);
@@ -109,7 +111,7 @@ public function storeCourse(Request $request)
             }
         }
 
-        // PROCESAR EXÁMENES (NUEVO)
+        // PROCESAR EXÁMENES - CORREGIDO
         $examenesCreados = 0;
         $preguntasCreadas = 0;
         
@@ -144,10 +146,30 @@ public function storeCourse(Request $request)
                         
                         $preguntasCreadas++;
 
-                        // Procesar opciones para preguntas de tipo multiple o verdadero/falso
-                        if (in_array($preguntaData['tipo'], ['multiple', 'verdadero_falso']) && !empty($preguntaData['opciones'])) {
+                        // CAMBIO PRINCIPAL: Manejo correcto de opciones para verdadero/falso
+                        if ($preguntaData['tipo'] === 'verdadero_falso') {
+                            // Obtener qué opción fue seleccionada como correcta
+                            $opcionCorrecta = $preguntaData['opcion_correcta'] ?? null;
+                            
+                            // Crear opción "Verdadero"
+                            DB::table('opciones_respuesta')->insert([
+                                'pregunta_id' => $preguntaId,
+                                'opcion' => 'Verdadero',
+                                'es_correcta' => ($opcionCorrecta === 'verdadero') ? 1 : 0,
+                                'orden' => 0
+                            ]);
+                            
+                            // Crear opción "Falso"
+                            DB::table('opciones_respuesta')->insert([
+                                'pregunta_id' => $preguntaId,
+                                'opcion' => 'Falso',
+                                'es_correcta' => ($opcionCorrecta === 'falso') ? 1 : 0,
+                                'orden' => 1
+                            ]);
+                            
+                        } elseif ($preguntaData['tipo'] === 'multiple' && !empty($preguntaData['opciones'])) {
+                            // Para preguntas de opción múltiple (si las implementas en el futuro)
                             foreach ($preguntaData['opciones'] as $index => $opcionData) {
-                                // Determinar si es la opción correcta
                                 $esCorrecta = 0;
                                 if (isset($preguntaData['opciones_correctas'])) {
                                     $esCorrecta = ($preguntaData['opciones_correctas'] == $index) ? 1 : 0;
@@ -161,6 +183,7 @@ public function storeCourse(Request $request)
                                 ]);
                             }
                         }
+                        // Para tipo 'texto' no se crean opciones
                     }
                 }
             }
@@ -177,6 +200,11 @@ public function storeCourse(Request $request)
 
     } catch (\Exception $e) {
         DB::rollBack();
+        
+        // Para debugging - puedes comentar esto en producción
+        Log::error('Error al crear curso: ' . $e->getMessage());
+        Log::error('Request data: ' . json_encode($request->all()));
+        
         return redirect()->back()
                ->withInput()
                ->with('error', 'Error al crear curso: '.$e->getMessage());

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class CourseController extends Controller
 {
@@ -66,38 +67,87 @@ class CourseController extends Controller
                         'updated_at' => now()
                     ]);
                     
-                    // Guardar preguntas verdadero/falso
-                    if (isset($examenData['preguntas'])) {
-                        foreach ($examenData['preguntas'] as $preguntaData) {
-                            $preguntaId = DB::table('preguntas')->insertGetId([
-                                'examen_id' => $examenId,
-                                'pregunta' => $preguntaData['pregunta'],
-                                'tipo' => 'verdadero_falso', // Siempre verdadero/falso
-                                'puntos' => $preguntaData['puntos'] ?? 1,
-                                'orden' => 0
-                            ]);
-                            
-                            // Guardar opciones de respuesta (Verdadero y Falso)
-                            if (isset($preguntaData['opciones'])) {
-                                foreach ($preguntaData['opciones'] as $index => $opcionData) {
-                                    $esCorrecta = 0;
-                                    
-                                    // Determinar si esta opción es la correcta
-                                    if (isset($preguntaData['opcion_correcta'])) {
-                                        $opcionCorrectaIndex = $preguntaData['opcion_correcta'];
-                                        $esCorrecta = ($index == $opcionCorrectaIndex) ? 1 : 0;
-                                    }
-                                    
-                                    DB::table('opciones_respuesta')->insert([
-                                        'pregunta_id' => $preguntaId,
-                                        'opcion' => $opcionData['opcion'],
-                                        'es_correcta' => $esCorrecta,
-                                        'orden' => $index
-                                    ]);
-                                }
-                            }
-                        }
-                    }
+                  // Guardar preguntas verdadero/falso
+if (isset($examenData['preguntas'])) {
+    foreach ($examenData['preguntas'] as $preguntaData) {
+        $preguntaId = DB::table('preguntas')->insertGetId([
+            'examen_id' => $examenId,
+            'pregunta' => $preguntaData['pregunta'],
+            'tipo' => 'verdadero_falso', // Siempre verdadero/falso
+            'puntos' => $preguntaData['puntos'] ?? 1,
+            'orden' => 0
+        ]);
+        
+        // Guardar opciones de respuesta (Verdadero y Falso)
+    // Guardar preguntas verdadero/falso
+if (isset($examenData['preguntas'])) {
+    foreach ($examenData['preguntas'] as $preguntaData) {
+        $preguntaId = DB::table('preguntas')->insertGetId([
+            'examen_id' => $examenId,
+            'pregunta' => $preguntaData['pregunta'],
+            'tipo' => 'verdadero_falso', // Siempre verdadero/falso
+            'puntos' => $preguntaData['puntos'] ?? 1,
+            'orden' => 0
+        ]);
+        
+// Guardar preguntas verdadero/falso
+if (isset($examenData['preguntas'])) {
+    foreach ($examenData['preguntas'] as $preguntaIndex => $preguntaData) {
+        // DEBUG: Ver toda la estructura de la pregunta
+        Log::info("=== PREGUNTA {$preguntaIndex} ===");
+        Log::info("Estructura completa:", $preguntaData);
+        Log::info("Opción correcta raw:", $preguntaData['opcion_correcta'] ?? 'NO EXISTE');
+        Log::info("Tipo de opcion_correcta:", gettype($preguntaData['opcion_correcta'] ?? null));
+        
+        $preguntaId = DB::table('preguntas')->insertGetId([
+            'examen_id' => $examenId,
+            'pregunta' => $preguntaData['pregunta'],
+            'tipo' => 'verdadero_falso',
+            'puntos' => $preguntaData['puntos'] ?? 1,
+            'orden' => 0
+        ]);
+        
+        // Guardar opciones de respuesta (Verdadero y Falso)
+        if (isset($preguntaData['opciones'])) {
+            Log::info("Opciones encontradas:", $preguntaData['opciones']);
+            
+            foreach ($preguntaData['opciones'] as $index => $opcionData) {
+                Log::info("--- Opción {$index} ---");
+                Log::info("Datos de opción:", $opcionData);
+                Log::info("Texto opción:", $opcionData['opcion']);
+                
+                $esCorrecta = 0;
+                
+                // Determinar si esta opción es la correcta
+                if (isset($preguntaData['opcion_correcta'])) {
+                    $opcionCorrectaValue = $preguntaData['opcion_correcta'];
+                    $valorOpcionActual = ($index == 0) ? 'verdadero' : 'falso';
+                    
+                    Log::info("Comparando:");
+                    Log::info("- Valor opción actual: '{$valorOpcionActual}'");
+                    Log::info("- Opción correcta del form: '{$opcionCorrectaValue}'");
+                    Log::info("- Son iguales (===): " . ($valorOpcionActual === $opcionCorrectaValue ? 'SÍ' : 'NO'));
+                    Log::info("- Son iguales (==): " . ($valorOpcionActual == $opcionCorrectaValue ? 'SÍ' : 'NO'));
+                    
+                    $esCorrecta = ($valorOpcionActual === $opcionCorrectaValue) ? 1 : 0;
+                }
+                
+                Log::info("Es correcta final: {$esCorrecta}");
+                
+                DB::table('opciones_respuesta')->insert([
+                    'pregunta_id' => $preguntaId,
+                    'opcion' => $opcionData['opcion'],
+                    'es_correcta' => $esCorrecta,
+                    'orden' => $index
+                ]);
+            }
+        }
+    }
+}
+    }
+}
+    }
+}
                 }
             }
             
