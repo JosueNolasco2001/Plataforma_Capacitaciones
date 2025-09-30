@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="max-w-5xl mx-auto p-5 sm:p-10">
+    <div class="max-w-screen-xl mx-auto  p-5 sm:p-10 md:p-16">
         <!-- Header con resultado -->
         <div class="bg-gradient-to-r 
             @if($mejorIntento && $mejorIntento->calificacion >= $examen->porcentaje_aprobacion)
@@ -7,7 +7,7 @@
             @else
                 from-yellow-500 to-orange-600
             @endif
-            text-white rounded-lg shadow-lg p-6 mb-6">
+            text-white rounded-lg shadow-lg p-6 mb-6 mt-[10%] sm:mt-0">
             
             <h1 class="text-3xl font-bold mb-2">Resultados del Examen</h1>
             <p class="text-xl opacity-90">{{ $examen->titulo }}</p>

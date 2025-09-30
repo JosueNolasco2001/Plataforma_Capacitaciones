@@ -1,7 +1,7 @@
 <x-app-layout>
-    <div class="max-w-4xl mx-auto p-5 sm:p-10">
+    <div class="max-w-4xl mx-auto p-5 sm:p-10 md:p-16">
         <!-- Header del Examen -->
-        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-lg p-6 mb-6">
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-lg p-6 mb-6 mt-[10%] sm:mt-0">
             <h1 class="text-3xl font-bold mb-2">{{ $examen->titulo }}</h1>
             <p class="text-lg opacity-90">Curso: {{ $examen->curso_titulo }}</p>
             
