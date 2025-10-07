@@ -29,7 +29,7 @@
                 <p class="text-gray-600 dark:text-gray-400">Mejor Calificación</p>
                 @if($mejorIntento && $mejorIntento->calificacion >= $examen->porcentaje_aprobacion)
                     <span class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
-                        ✅ APROBADO
+                         APROBADO
                     </span>
                 @else
                     <span class="inline-block mt-2 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
@@ -86,14 +86,14 @@
                         @foreach($intentos as $intento)
                             <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <td class="py-3 px-4">
-                                    <span class="font-semibold">Intento {{ $intento->intento }}</span>
+                                    <span class="font-semibold text-white">Intento {{ $intento->intento }}</span>
                                     @if($mejorIntento && $intento->id == $mejorIntento->id)
                                         <span class="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Mejor</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4">
                                     @if($intento->completado)
-                                        <span class="font-bold 
+                                        <span class="font-bold
                                             @if($intento->calificacion >= $examen->porcentaje_aprobacion)
                                                 text-green-600
                                             @else
@@ -142,7 +142,7 @@
         @if($ultimoIntento && $ultimoIntento->completado && count($preguntasConRespuestas) > 0)
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                    📝 Detalle del Último Intento Completado
+                    Detalle del Último Intento Completado
                 </h2>
                 
                 <div class="space-y-4">
@@ -221,7 +221,7 @@
             @elseif($puedeReintentar)
                 <a href="{{ route('examenes.tomar', $examen->id) }}" 
                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 text-center">
-                    🔄 Realizar Otro Intento
+                     Realizar Otro Intento
                 </a>
             @endif
             
@@ -233,7 +233,7 @@
             @if($mejorIntento && $mejorIntento->calificacion >= $examen->porcentaje_aprobacion)
                 <a href="{{ route('diploma.descargar.directo', $examen->curso_id) }}" 
                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 text-center">
-                    📄 Descargar Diploma
+                     Descargar Diploma
                 </a>
             @endif
         </div>

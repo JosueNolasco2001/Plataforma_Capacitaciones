@@ -7,13 +7,13 @@
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 text-sm">
                 <div class="bg-white/20 backdrop-blur rounded p-2">
-                    <span class="font-semibold">⏱️ Duración:</span> {{ $examen->duracion_minutos }} minutos
+                    <span class="font-semibold">⏱Duración:</span> {{ $examen->duracion_minutos }} minutos
                 </div>
                 <div class="bg-white/20 backdrop-blur rounded p-2">
-                    <span class="font-semibold">📝 Intento:</span> {{ $nuevoIntento }} de {{ $examen->intentos_permitidos }}
+                    <span class="font-semibold">Intento:</span> {{ $nuevoIntento }} de {{ $examen->intentos_permitidos }}
                 </div>
                 <div class="bg-white/20 backdrop-blur rounded p-2">
-                    <span class="font-semibold">✅ Aprobación:</span> {{ $examen->porcentaje_aprobacion }}%
+                    <span class="font-semibold">Aprobación:</span> {{ $examen->porcentaje_aprobacion }}%
                 </div>
             </div>
         </div>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="ml-3">
                         <p class="text-sm text-yellow-700">
-                            Estás continuando un examen pendiente. Tus respuestas anteriores han sido guardadas.
+                            Estás continuando un examen pendiente.
                         </p>
                     </div>
                 </div>
@@ -154,13 +154,13 @@
                 <button type="button" 
                         onclick="guardarBorrador()"
                         class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
-                    💾 Guardar y Continuar Después
+                     Continuar Después
                 </button>
                 
                 <button type="submit" 
                         id="btnEnviar"
                         class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
-                    ✅ Finalizar Examen
+                    Finalizar Examen
                 </button>
             </div>
         </form>

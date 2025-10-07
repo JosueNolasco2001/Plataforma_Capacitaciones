@@ -10,7 +10,7 @@
                 {{ $curso->titulo }}
             </h1>
             <p class="text-xl md:text-2xl font-light opacity-90 animate-subtitle-slide">
-                Impartido por <span class="font-semibold text-yellow-300 drop-shadow-sm">{{ $curso->instructor_nombre }}</span> | Especialista en Programación
+                Impartido por <span class="font-semibold text-yellow-300 drop-shadow-sm">{{ $curso->instructor_nombre }}</span> 
             </p>
         </div>
 
@@ -59,9 +59,7 @@
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div class="flex-1">
                         <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
+                          
                             Examen Final: {{ $examenCurso->titulo }}
                         </h3>
                         
@@ -106,9 +104,7 @@
                             @else
                                 <a href="{{ route('examenes.tomar', $examenCurso->id) }}" 
                                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                    </svg>
+                                   
                                     Realizar Examen
                                 </a>
                             @endif
@@ -117,9 +113,7 @@
                             @if($mejorCalificacion > 0)
                                 <a href="{{ route('examenes.resultado', $examenCurso->id) }}" 
                                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 text-sm">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v1a1 1 0 001 1h4a1 1 0 001-1v-1m3-2V8a2 2 0 00-2-2H8a2 2 0 00-2 2v8m5 -4h4"/>
-                                    </svg>
+                                
                                     Ver Resultados
                                 </a>
                             @endif
@@ -140,9 +134,9 @@
                                 <span class="text-sm font-medium {{ $mejorCalificacion >= $examenCurso->porcentaje_aprobacion ? 'text-green-600' : 'text-yellow-600' }}">
                                     Mejor calificación: <strong>{{ $mejorCalificacion }}%</strong>
                                     @if($mejorCalificacion >= $examenCurso->porcentaje_aprobacion)
-                                        ✅ Aprobado
+                                         Aprobado
                                     @else
-                                        ⚠️ Por mejorar
+                                         Por mejorar
                                     @endif
                                 </span>
                             </div>
@@ -167,63 +161,114 @@
             <!-- Grid de videos -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                @forelse($videos as $video)
-                <a href="{{ route('video.mostrar', $video->id) }}" 
-                   class="group relative block bg-black rounded-lg overflow-hidden">
+             <a href="{{ route('video.mostrar', $video->id) }}"                     class="group relative block rounded-lg overflow-hidden min-h-[400px]">
                     
-                    <!-- Imagen del video -->
-                    <img
-                        alt="{{ $video->titulo }}"
-                        src="https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                        class="absolute inset-0 h-full w-full rounded-lg object-cover 
-                               {{ $video->completado ? 'opacity-50' : 'opacity-75 group-hover:opacity-50' }} 
-                               transition-opacity"
-                    />
-                    
-                    <!-- Overlay de video completado -->
-                    @if($video->completado)
-                        <div class="absolute inset-0 bg-gray-900 opacity-50 rounded-lg"></div>
-                        <div class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                            VISTO
-                        </div>
-                    @else
-                        <!-- Indicador de video no visto -->
-                        <div class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
-                            PENDIENTE
-                        </div>
+    <!-- Fondo animado con gradiente - Colores violeta/fucsia/cyan/azul -->
+    <div class="absolute inset-0 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-600 animate-gradient"></div>
+    
+    <!-- Capa de blur y oscurecimiento -->
+    <div class="absolute inset-0 backdrop-blur-sm bg-[#0A0A0A]/40 
+                {{ $video->completado ? 'bg-[#0A0A0A]/70' : 'group-hover:bg-[#0A0A0A]/50' }} 
+                transition-all duration-300"></div>
+    
+    <!-- Efecto de brillo animado con esferas flotantes -->
+    <div class="absolute inset-0 opacity-40">
+        <div class="absolute top-0 -left-4 w-24 h-24 bg-violet-400 rounded-full mix-blend-overlay blur-xl animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-24 h-24 bg-fuchsia-400 rounded-full mix-blend-overlay blur-xl animate-blob-delay-2"></div>
+        <div class="absolute -bottom-8 left-20 w-24 h-24 bg-cyan-400 rounded-full mix-blend-overlay blur-xl animate-blob-delay-4"></div>
+    </div>
+                                      
+    <!-- Badges de estado -->
+    @if($video->completado)
+        <div class="absolute top-4 left-4 bg-emerald-500 text-white px-3 py-1.5 rounded-md text-xs font-semibold z-20 shadow-lg backdrop-blur-sm">
+            VISTO
+        </div>
+    @else
+        <div class="absolute top-4 left-4 bg-fuchsia-600 text-white px-3 py-1.5 rounded-md text-xs font-semibold z-20 shadow-lg backdrop-blur-sm">
+            ● PENDIENTE
+        </div>
+    @endif
+     
+    <!-- Play button overlay -->
+    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+        <div class="bg-white/95 rounded-full p-5 shadow-2xl transform group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-10 h-10 text-violet-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+            </svg>
+        </div>
+    </div>
+                                 
+    <!-- Contenido de la tarjeta -->
+    <div class="relative h-full flex flex-col justify-between p-6 sm:p-8 z-10">
+        <div>
+         
+                                      
+            <h3 class="text-xlc mt-10 sm:text-2xl lg:text-3xl font-bold text-white leading-tight drop-shadow-lg">
+                {{ $video->titulo }}
+            </h3>
+        </div>
+                                      
+        <!-- Información adicional -->
+        <div class="mt-32 sm:mt-48 lg:mt-64">
+            <div class="translate-y-8 transform opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+              
+                   
+                    @if($video->completado && $video->ultima_vista)
+                      <div class="bg-[#0A0A0A]/60 backdrop-blur-md rounded-lg px-4 py-3 inline-block border border-violet-500/30">
+                        <p class="text-sm text-emerald-300 mt-1">
+                            <span class="text-emerald-400">✓</span> Visto el {{ \Carbon\Carbon::parse($video->ultima_vista)->format('d/m/Y') }}
+                        </p>
+                      </div>
                     @endif
+             
+            </div>
+        </div>
+    </div>
+</a>
 
-                    <!-- Play button overlay -->
-                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div class="bg-white bg-opacity-90 rounded-full p-4">
-                            <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                    </div>
-                
-                    <div class="relative p-8 mt-3">
-                        <p class="text-sm font-medium tracking-widest text-pink-500 uppercase">
-                            VIDEO {{ $video->orden }}
-                        </p>
-                
-                        <p class="text-xl font-bold text-white sm:text-2xl">
-                            {{ $video->titulo }}
-                        </p>
-                
-                        <div class="mt-32 sm:mt-48 lg:mt-64">
-                            <div class="translate-y-8 transform opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
-                                <p class="text-sm text-white">
-                                    @if($video->duracion)
-                                        Duración: {{ $video->duracion }} min
-                                    @endif
-                                    @if($video->completado && $video->ultima_vista)
-                                        <br><span class="text-green-300">Visto: {{ \Carbon\Carbon::parse($video->ultima_vista)->format('d/m/Y') }}</span>
-                                    @endif
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+<style>
+/* Animación de gradiente */
+@keyframes gradient {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Animación de esferas flotantes */
+@keyframes blob {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+}
+
+.animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 15s ease infinite;
+}
+
+.animate-blob {
+    animation: blob 7s infinite;
+}
+
+.animate-blob-delay-2 {
+    animation: blob 7s infinite;
+    animation-delay: 2s;
+}
+
+.animate-blob-delay-4 {
+    animation: blob 7s infinite;
+    animation-delay: 4s;
+}
+</style>
                 @empty
                     <div class="col-span-full text-center py-8">
                         <p class="text-gray-500">No hay videos disponibles para este curso</p>
