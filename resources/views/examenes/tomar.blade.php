@@ -36,134 +36,134 @@
         @endif
 
         <!-- Instrucciones -->
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-            <h3 class="font-semibold text-blue-900 dark:text-blue-300 mb-2">📌 Instrucciones:</h3>
-            <ul class="list-disc list-inside text-sm text-blue-800 dark:text-blue-400 space-y-1">
-                <li>Lee cuidadosamente cada pregunta antes de responder</li>
-                <li>Todas las preguntas son de tipo Verdadero o Falso</li>
-                <li>Debes responder todas las preguntas para finalizar el examen</li>
-                <li>Una vez enviado, no podrás cambiar tus respuestas</li>
-                @if($examen->descripcion)
-                    <li class="mt-2 font-semibold">{{ $examen->descripcion }}</li>
-                @endif
-            </ul>
-        </div>
+      <div class="bg-blue-900 border border-blue-800 rounded-lg p-4 mb-6">
+    <h3 class="font-semibold text-blue-300 mb-2">📌 Instrucciones:</h3>
+    <ul class="list-disc list-inside text-sm text-blue-400 space-y-1">
+        <li>Lee cuidadosamente cada pregunta antes de responder</li>
+        <li>Todas las preguntas son de tipo Verdadero o Falso</li>
+        <li>Debes responder todas las preguntas para finalizar el examen</li>
+        <li>Una vez enviado, no podrás cambiar tus respuestas</li>
+        @if($examen->descripcion)
+            <li class="mt-2 font-semibold">{{ $examen->descripcion }}</li>
+        @endif
+    </ul>
+</div>
 
         <!-- Formulario del Examen -->
-        <form id="formExamen" action="{{ route('examenes.guardar', $examen->id) }}" method="POST" 
-              class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            @csrf
-            <input type="hidden" name="resultado_id" value="{{ $resultadoId }}">
-            
-            <!-- Contador de tiempo (opcional, visual) -->
-            <div class="mb-6 text-center">
-                <div class="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-full">
-                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span id="tiempo" class="font-mono text-lg font-semibold text-gray-700 dark:text-gray-300">
-                        {{ $examen->duracion_minutos }}:00
-                    </span>
-                </div>
-            </div>
+       <form id="formExamen" action="{{ route('examenes.guardar', $examen->id) }}" method="POST" 
+      class="bg-gray-800 rounded-lg shadow-lg p-6">
+    @csrf
+    <input type="hidden" name="resultado_id" value="{{ $resultadoId }}">
+    
+    <!-- Contador de tiempo (opcional, visual) -->
+    <div class="mb-6 text-center">
+        <div class="inline-flex items-center gap-2 bg-gray-700 px-4 py-2 rounded-full">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span id="tiempo" class="font-mono text-lg font-semibold text-gray-300">
+                {{ $examen->duracion_minutos }}:00
+            </span>
+        </div>
+    </div>
 
-            <!-- Preguntas -->
-            <div class="space-y-6">
-                @foreach($preguntas as $index => $pregunta)
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-5 hover:shadow-md transition-shadow">
-                        <div class="flex items-start gap-3">
-                            <span class="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-semibold text-sm">
-                                {{ $index + 1 }}
-                            </span>
-                            
-                            <div class="flex-grow">
-                                <p class="text-gray-800 dark:text-gray-200 font-medium mb-3">
-                                    {{ $pregunta->pregunta }}
-                                </p>
-                                
-                                <div class="flex gap-4">
-                                    <!-- Opción Verdadero -->
-                                    <label class="flex items-center cursor-pointer group">
-                                        <input type="radio" 
-                                               name="respuestas[{{ $pregunta->id }}]" 
-                                               value="verdadero"
-                                               class="sr-only peer"
-                                               @if(isset($respuestasGuardadas[$pregunta->id]) && $respuestasGuardadas[$pregunta->id] == 'verdadero')
-                                                   checked
-                                               @endif
-                                               required>
-                                        <div class="relative w-6 h-6 mr-2 border-2 border-gray-300 rounded-full peer-checked:border-green-500 peer-checked:bg-green-500 transition-all">
-                                            <div class="absolute inset-0 flex items-center justify-center">
-                                                <div class="w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
-                                            </div>
-                                        </div>
-                                        <span class="text-gray-700 dark:text-gray-300 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
-                                            ✓ Verdadero
-                                        </span>
-                                    </label>
-                                    
-                                    <!-- Opción Falso -->
-                                    <label class="flex items-center cursor-pointer group">
-                                        <input type="radio" 
-                                               name="respuestas[{{ $pregunta->id }}]" 
-                                               value="falso"
-                                               class="sr-only peer"
-                                               @if(isset($respuestasGuardadas[$pregunta->id]) && $respuestasGuardadas[$pregunta->id] == 'falso')
-                                                   checked
-                                               @endif
-                                               required>
-                                        <div class="relative w-6 h-6 mr-2 border-2 border-gray-300 rounded-full peer-checked:border-red-500 peer-checked:bg-red-500 transition-all">
-                                            <div class="absolute inset-0 flex items-center justify-center">
-                                                <div class="w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
-                                            </div>
-                                        </div>
-                                        <span class="text-gray-700 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
-                                            ✗ Falso
-                                        </span>
-                                    </label>
+    <!-- Preguntas -->
+    <div class="space-y-6">
+        @foreach($preguntas as $index => $pregunta)
+            <div class="border border-gray-700 rounded-lg p-5 hover:shadow-md transition-shadow">
+                <div class="flex items-start gap-3">
+                    <span class="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-900 text-blue-200 font-semibold text-sm">
+                        {{ $index + 1 }}
+                    </span>
+                    
+                    <div class="flex-grow">
+                        <p class="text-gray-200 font-medium mb-3">
+                            {{ $pregunta->pregunta }}
+                        </p>
+                        
+                        <div class="flex gap-4">
+                            <!-- Opción Verdadero -->
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="radio" 
+                                       name="respuestas[{{ $pregunta->id }}]" 
+                                       value="verdadero"
+                                       class="sr-only peer"
+                                       @if(isset($respuestasGuardadas[$pregunta->id]) && $respuestasGuardadas[$pregunta->id] == 'verdadero')
+                                           checked
+                                       @endif
+                                       required>
+                                <div class="relative w-6 h-6 mr-2 border-2 border-gray-500 rounded-full peer-checked:border-green-500 peer-checked:bg-green-500 transition-all">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
+                                    </div>
                                 </div>
-                                
-                                @if($pregunta->puntos > 1)
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                        Valor: {{ $pregunta->puntos }} puntos
-                                    </p>
-                                @endif
-                            </div>
+                                <span class="text-gray-300 group-hover:text-green-400 transition-colors">
+                                    ✓ Verdadero
+                                </span>
+                            </label>
+                            
+                            <!-- Opción Falso -->
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="radio" 
+                                       name="respuestas[{{ $pregunta->id }}]" 
+                                       value="falso"
+                                       class="sr-only peer"
+                                       @if(isset($respuestasGuardadas[$pregunta->id]) && $respuestasGuardadas[$pregunta->id] == 'falso')
+                                           checked
+                                       @endif
+                                       required>
+                                <div class="relative w-6 h-6 mr-2 border-2 border-gray-500 rounded-full peer-checked:border-red-500 peer-checked:bg-red-500 transition-all">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
+                                    </div>
+                                </div>
+                                <span class="text-gray-300 group-hover:text-red-400 transition-colors">
+                                    ✗ Falso
+                                </span>
+                            </label>
                         </div>
+                        
+                        @if($pregunta->puntos > 1)
+                            <p class="text-xs text-gray-400 mt-2">
+                                Valor: {{ $pregunta->puntos }} puntos
+                            </p>
+                        @endif
                     </div>
-                @endforeach
-            </div>
-
-            <!-- Contador de preguntas respondidas -->
-            <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-600 dark:text-gray-400">
-                        Preguntas respondidas:
-                    </span>
-                    <span class="font-semibold text-gray-800 dark:text-gray-200">
-                        <span id="respondidas">0</span> / {{ count($preguntas) }}
-                    </span>
-                </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2">
-                    <div id="barraProgreso" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
                 </div>
             </div>
+        @endforeach
+    </div>
 
-            <!-- Botones de acción -->
-            <div class="flex gap-4 mt-8">
-                <button type="button" 
-                        onclick="guardarBorrador()"
-                        class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
-                     Continuar Después
-                </button>
-                
-                <button type="submit" 
-                        id="btnEnviar"
-                        class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
-                    Finalizar Examen
-                </button>
-            </div>
-        </form>
+    <!-- Contador de preguntas respondidas -->
+    <div class="mt-6 p-4 bg-gray-700 rounded-lg">
+        <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-400">
+                Preguntas respondidas:
+            </span>
+            <span class="font-semibold text-gray-200">
+                <span id="respondidas">0</span> / {{ count($preguntas) }}
+            </span>
+        </div>
+        <div class="w-full bg-gray-600 rounded-full h-2 mt-2">
+            <div id="barraProgreso" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="flex gap-4 mt-8">
+        <button type="button" 
+                onclick="guardarBorrador()"
+                class="flex-1 bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+             Continuar Después
+        </button>
+        
+        <button type="submit" 
+                id="btnEnviar"
+                class="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+            Finalizar Examen
+        </button>
+    </div>
+</form>
     </div>
 
     <script>

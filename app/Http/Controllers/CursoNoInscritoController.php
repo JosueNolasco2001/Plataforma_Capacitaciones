@@ -395,7 +395,7 @@ private function generarDiplomaAutomatico($curso, $totalVideos, $videosCompletad
         Log::info("Diploma ya existe");
         return true;
     }
-      $logoAbsolutePath = public_path('img/logo-senacit.png');
+      $logoAbsolutePath = public_path('img/logo-senacit-diploma.png');
         
         Log::info("Ruta absoluta del logo", [
             'ruta' => $logoAbsolutePath,

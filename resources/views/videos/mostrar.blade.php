@@ -52,32 +52,31 @@
         <!-- Formulario de comentarios -->
         @if (auth()->user()->email_verified_at)
             <!-- Usuario verificado - mostrar formulario normal -->
-            <form id="comentarioForm" class="mt-10">
-                @csrf
-                <div class="w-full mb-4 rounded-lg dark:bg-[rgba(17,24,39,0.4)]">
-                    <div class="px-4 py-2 dark:bg-[rgba(17,24,39,0.4)]">
-                        <label for="contenido" class="sr-only">Your comment</label>
-                        <textarea id="contenido" name="contenido" rows="4"
-                            class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-[rgba(17,24,39,0.4)] focus:ring-0 dark:text-white dark:placeholder-gray-400"
-                            placeholder="Escribe un comentario" required></textarea>
-                    </div>
-                    <div
-                        class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600 border-gray-200">
-                        <button type="submit" id="btnComentario"
-                            class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
-                            <span class="btn-text">Comentar</span>
-                            <svg class="animate-spin ml-2 h-4 w-4 text-white hidden" id="loading-spinner" fill="none"
-                                viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </form>
+           <form id="comentarioForm" class="mt-10">
+    @csrf
+    <div class="w-full mb-4 rounded-lg bg-gray-800">
+        <div class="px-4 py-2 bg-gray-800">
+            <label for="contenido" class="sr-only">Your comment</label>
+            <textarea id="contenido" name="contenido" rows="4"
+                class="w-full px-0 text-sm text-white bg-gray-800 border-0 focus:ring-0 placeholder-gray-400"
+                placeholder="Escribe un comentario" required></textarea>
+        </div>
+        <div class="flex items-center justify-between px-3 py-2 border-t border-gray-600">
+            <button type="submit" id="btnComentario"
+                class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-600 rounded-lg focus:ring-4 focus:ring-blue-800 hover:bg-blue-700">
+                <span class="btn-text">Comentar</span>
+                <svg class="animate-spin ml-2 h-4 w-4 text-white hidden" id="loading-spinner" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                        stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</form>
         @else
             <!-- Usuario NO verificado - mostrar formulario bloqueado -->
             <div class="mt-10">
@@ -148,114 +147,115 @@
         </p>
 
         <!-- Contenedor de comentarios -->
-        <div id="comentarios-container">
-            @forelse($comentarios as $comentario)
-                <article
-                    class="comentario-item p-6 text-base rounded-lg bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] mb-4"
-                    data-comentario-id="{{ $comentario->id }}">
-                    <footer class="flex justify-between items-center mb-2">
-                        <div class="flex items-center">
-                            <p
-                                class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-                               <img class="mr-2 w-6 h-6 rounded-full object-cover"
+       <!-- Contenedor de comentarios -->
+<div id="comentarios-container">
+    @forelse($comentarios as $comentario)
+        <article
+            class="comentario-item p-6 text-base rounded-lg bg-gray-700 mb-4"
+            data-comentario-id="{{ $comentario->id }}">
+            <footer class="flex justify-between items-center mb-2">
+                <div class="flex items-center">
+                    <p
+                        class="inline-flex items-center mr-3 text-sm text-white font-semibold">
+                       <img class="mr-2 w-6 h-6 rounded-full object-cover"
      src="{{ $comentario->profile_photo_path ? asset('storage/' . $comentario->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($comentario->usuario_nombre) . '&background=random&color=fff&size=64' }}"
      alt="{{ $comentario->usuario_nombre }}">
 
-                                {{ $comentario->usuario_nombre }}
-                            </p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                <time>{{ \Carbon\Carbon::parse($comentario->fecha_creacion)->format('M. d, Y') }}</time>
-                            </p>
-                        </div>
-                    </footer>
-                    <p class="text-gray-500 dark:text-gray-400">{{ $comentario->contenido }}</p>
+                        {{ $comentario->usuario_nombre }}
+                    </p>
+                    <p class="text-sm text-gray-400">
+                        <time>{{ \Carbon\Carbon::parse($comentario->fecha_creacion)->format('M. d, Y') }}</time>
+                    </p>
+                </div>
+            </footer>
+            <p class="text-gray-400">{{ $comentario->contenido }}</p>
 
-                    <!-- Botón para responder (solo si está verificado) -->
-                    @if (auth()->user()->email_verified_at)
-                        <div class="flex items-center mt-4 space-x-4">
+            <!-- Botón para responder (solo si está verificado) -->
+            @if (auth()->user()->email_verified_at)
+                <div class="flex items-center mt-4 space-x-4">
+                    <button type="button" onclick="toggleRespuestaForm({{ $comentario->id }})"
+                        class="flex items-center text-sm text-gray-400 hover:underline font-medium">
+                        <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 20 18">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z" />
+                        </svg>
+                        Responder
+                    </button>
+                </div>
+
+                <!-- Formulario de respuesta -->
+                <form id="respuestaForm-{{ $comentario->id }}" class="respuesta-form hidden mt-4 ml-6">
+                    @csrf
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-1">
+                            <textarea name="contenido" rows="3"
+                                class="w-full px-3 py-2 text-sm text-white bg-gray-600 rounded-lg border border-gray-500 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
+                                placeholder="Escribe tu respuesta..." required></textarea>
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <button type="submit"
+                                class="px-4 py-2 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-800">
+                                <span class="btn-text">Responder</span>
+                            </button>
                             <button type="button" onclick="toggleRespuestaForm({{ $comentario->id }})"
-                                class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
-                                <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 20 18">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z" />
-                                </svg>
-                                Responder
+                                class="px-4 py-2 text-xs font-medium text-center text-gray-300 bg-gray-600 rounded-lg border border-gray-500 hover:bg-gray-500 focus:ring-4 focus:ring-gray-600">
+                                Cancelar
                             </button>
                         </div>
+                    </div>
+                </form>
+            @else
+                <!-- Usuario no verificado - botón de respuesta bloqueado -->
+                <div class="flex items-center mt-4 space-x-4">
+                    <button type="button" onclick="showVerificationModal()"
+                        class="flex items-center text-sm text-gray-500 cursor-not-allowed font-medium">
+                        <svg class="mr-1.5 w-3.5 h-3.5" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m0 0v2m0-2h2m-2 0H8" />
+                        </svg>
+                        Verificar email para responder
+                    </button>
+                </div>
+            @endif
 
-                        <!-- Formulario de respuesta -->
-                        <form id="respuestaForm-{{ $comentario->id }}" class="respuesta-form hidden mt-4 ml-6">
-                            @csrf
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-1">
-                                    <textarea name="contenido" rows="3"
-                                        class="w-full px-3 py-2 text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Escribe tu respuesta..." required></textarea>
-                                </div>
-                                <div class="flex flex-col space-y-2">
-                                    <button type="submit"
-                                        class="px-4 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-200">
-                                        <span class="btn-text">Responder</span>
-                                    </button>
-                                    <button type="button" onclick="toggleRespuestaForm({{ $comentario->id }})"
-                                        class="px-4 py-2 text-xs font-medium text-center text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200">
-                                        Cancelar
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    @else
-                        <!-- Usuario no verificado - botón de respuesta bloqueado -->
-                        <div class="flex items-center mt-4 space-x-4">
-                            <button type="button" onclick="showVerificationModal()"
-                                class="flex items-center text-sm text-gray-400 cursor-not-allowed font-medium">
-                                <svg class="mr-1.5 w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 15v2m0 0v2m0-2h2m-2 0H8" />
-                                </svg>
-                                Verificar email para responder
-                            </button>
-                        </div>
-                    @endif
-
-                    <!-- Respuestas existentes -->
-                    <div class="respuestas-container">
-                        @if (isset($comentario->respuestas) && count($comentario->respuestas) > 0)
-                            @foreach ($comentario->respuestas as $respuesta)
-                                <article
-                                    class="respuesta-item p-6 mb-3 mt-3 ml-6 lg:ml-12 text-base bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] rounded-lg">
-                                    <footer class="flex justify-between items-center mb-2">
-                                        <div class="flex items-center" id="prueba">
-                                            <p
-                                                class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-                                              <img class="mr-2 w-6 h-6 rounded-full object-cover"
+            <!-- Respuestas existentes -->
+            <div class="respuestas-container">
+                @if (isset($comentario->respuestas) && count($comentario->respuestas) > 0)
+                    @foreach ($comentario->respuestas as $respuesta)
+                        <article
+                            class="respuesta-item p-6 mb-3 mt-3 ml-6 lg:ml-12 text-base bg-gray-700 rounded-lg">
+                            <footer class="flex justify-between items-center mb-2">
+                                <div class="flex items-center" id="prueba">
+                                    <p
+                                        class="inline-flex items-center mr-3 text-sm text-white font-semibold">
+                                      <img class="mr-2 w-6 h-6 rounded-full object-cover"
      src="{{ $respuesta->profile_photo_path 
         ? asset('storage/' . $respuesta->profile_photo_path) 
         : 'https://ui-avatars.com/api/?name=' . urlencode($respuesta->usuario_nombre) . '&background=random&color=fff&size=64' }}"
      alt="{{ $respuesta->usuario_nombre }}">
 
-                                                {{ $respuesta->usuario_nombre }}
-                                            </p>
-                                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                                <time>{{ \Carbon\Carbon::parse($respuesta->fecha_creacion)->format('M. d, Y') }}</time>
-                                            </p>
-                                        </div>
-                                    </footer>
-                                    <p class="text-gray-500 dark:text-gray-400">{{ $respuesta->contenido }}</p>
-                                </article>
-                            @endforeach
-                        @endif
-                    </div>
-                </article>
-            @empty
-                <div id="no-comments" class="text-center py-8">
-                    <p class="text-gray-500 dark:text-gray-400">No hay comentarios aún. ¡Sé el primero en comentar!</p>
-                </div>
-            @endforelse
+                                        {{ $respuesta->usuario_nombre }}
+                                    </p>
+                                    <p class="text-sm text-gray-400">
+                                        <time>{{ \Carbon\Carbon::parse($respuesta->fecha_creacion)->format('M. d, Y') }}</time>
+                                    </p>
+                                </div>
+                            </footer>
+                            <p class="text-gray-400">{{ $respuesta->contenido }}</p>
+                        </article>
+                    @endforeach
+                @endif
+            </div>
+        </article>
+    @empty
+        <div id="no-comments" class="text-center py-8">
+            <p class="text-gray-400">No hay comentarios aún. ¡Sé el primero en comentar!</p>
         </div>
+    @endforelse
+</div>
     </div>
 
     <!-- Modal de verificación de email -->
@@ -626,56 +626,56 @@ if (isVerified) {
                     });
 
                 const comentarioHtml = `
-                <article class="comentario-item p-6 text-base rounded-lg bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] mb-4" data-comentario-id="${comentario.id}">
-                    <footer class="flex justify-between items-center mb-2">
-                        <div class="flex items-center">
-                            <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-                                <img class="mr-2 w-6 h-6 rounded-full"
-                                     src="${comentario.profile_photo_path 
+             <article class="comentario-item p-6 text-base rounded-lg bg-gray-700 mb-4" data-comentario-id="${comentario.id}">
+    <footer class="flex justify-between items-center mb-2">
+        <div class="flex items-center">
+            <p class="inline-flex items-center mr-3 text-sm text-white font-semibold">
+                <img class="mr-2 w-6 h-6 rounded-full"
+                     src="${comentario.profile_photo_path 
     ? '/storage/' + comentario.profile_photo_path 
     : `https://ui-avatars.com/api/?name=${encodeURIComponent(comentario.usuario_nombre)}&background=random&color=fff&size=64`}"
-                                     alt="${comentario.usuario_nombre}">
-                                ${comentario.usuario_nombre}
-                            </p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                <time>${fechaFormateada}</time>
-                            </p>
-                        </div>
-                    </footer>
-                    <p class="text-gray-500 dark:text-gray-400">${comentario.contenido}</p>
-                    
-                    <div class="flex items-center mt-4 space-x-4">
-                        <button type="button" onclick="toggleRespuestaForm(${comentario.id})"
-                                class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
-                            <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z"/>
-                            </svg>
-                            Responder
-                        </button>
-                    </div>
+                     alt="${comentario.usuario_nombre}">
+                ${comentario.usuario_nombre}
+            </p>
+            <p class="text-sm text-gray-400">
+                <time>${fechaFormateada}</time>
+            </p>
+        </div>
+    </footer>
+    <p class="text-gray-400">${comentario.contenido}</p>
+    
+    <div class="flex items-center mt-4 space-x-4">
+        <button type="button" onclick="toggleRespuestaForm(${comentario.id})"
+                class="flex items-center text-sm text-gray-400 hover:underline font-medium">
+            <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z"/>
+            </svg>
+            Responder
+        </button>
+    </div>
 
-                    <form id="respuestaForm-${comentario.id}" class="respuesta-form hidden mt-4 ml-6">
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-1">
-                                <textarea name="contenido" rows="3" 
-                                          class="w-full px-3 py-2 text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                                          placeholder="Escribe un comentario..." required></textarea>
-                            </div>
-                            <div class="flex flex-col space-y-2">
-                                <button type="submit" 
-                                        class="px-4 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-200">
-                                    <span class="btn-text">Responder</span>
-                                </button>
-                                <button type="button" onclick="toggleRespuestaForm(${comentario.id})"
-                                        class="px-4 py-2 text-xs font-medium text-center text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:ring-gray-200">
-                                        Cancelar
-                                        </button>
-                            </div>
-                        </div>
-                    </form>
-                    
-                    <div class="respuestas-container"></div>
-                </article>
+    <form id="respuestaForm-${comentario.id}" class="respuesta-form hidden mt-4 ml-6">
+        <div class="flex items-start space-x-4">
+            <div class="flex-1">
+                <textarea name="contenido" rows="3" 
+                          class="w-full px-3 py-2 text-sm text-white bg-gray-600 rounded-lg border border-gray-500 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400" 
+                          placeholder="Escribe un comentario..." required></textarea>
+            </div>
+            <div class="flex flex-col space-y-2">
+                <button type="submit" 
+                        class="px-4 py-2 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-800">
+                    <span class="btn-text">Responder</span>
+                </button>
+                <button type="button" onclick="toggleRespuestaForm(${comentario.id})"
+                        class="px-4 py-2 text-xs font-medium text-center text-gray-300 bg-gray-600 rounded-lg border border-gray-500 hover:bg-gray-500 focus:ring-4 focus:ring-gray-600">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </form>
+    
+    <div class="respuestas-container"></div>
+</article>
             `;
 
                 document.getElementById('comentarios-container').insertAdjacentHTML('afterbegin',
@@ -754,10 +754,10 @@ async function handleRespuestaSubmit(e) {
                 day: 'numeric'
             });
 const respuestaHtml = `
-<article class="respuesta-item p-6 mb-3 mt-3 ml-6 lg:ml-12 text-base bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(17,24,39,0.4)] rounded-lg">
+<article class="respuesta-item p-6 mb-3 mt-3 ml-6 lg:ml-12 text-base bg-gray-700 rounded-lg">
     <footer class="flex justify-between items-center mb-2">
         <div class="flex items-center">
-            <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
+            <p class="inline-flex items-center mr-3 text-sm text-white font-semibold">
                 <img class="mr-2 w-6 h-6 rounded-full object-cover"
                      src="${respuesta.profile_photo_path 
                         ? '/storage/' + respuesta.profile_photo_path 
@@ -765,12 +765,12 @@ const respuestaHtml = `
                      alt="${respuesta.usuario_nombre}">
                 ${respuesta.usuario_nombre}
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
+            <p class="text-sm text-gray-400">
                 <time>${fechaFormateada}</time>
             </p>
         </div>
     </footer>
-    <p class="text-gray-500 dark:text-gray-400">${respuesta.contenido}</p>
+    <p class="text-gray-400">${respuesta.contenido}</p>
 </article>
 `;
 
