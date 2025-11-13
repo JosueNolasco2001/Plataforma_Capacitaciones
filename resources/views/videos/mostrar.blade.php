@@ -347,36 +347,91 @@
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-// Variables para YouTube Player
+
+
 let youtubePlayer;
 let playerReady = false;
-let maxTimeReached = 0; // Tiempo máximo alcanzado
+let maxTimeReached = 0;
 let checkingProgress = false;
 const YOUTUBE_VIDEO_ID = '{{ $youtubeVideoId }}';
-
-
-// Variables globales
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-const isVerified = {{ auth()->user()->email_verified_at ? 'true' : 'false' }};
 let videoMarcadoComoVisto = {{ $yaVisto ? 'true' : 'false' }};
+let apiReady = false;
+
+
+const isVerified = {{ auth()->user()->email_verified_at ? 'true' : 'false' }};
+
+
+// Verificar si API está cargada
+function checkYouTubeAPI() {
+    if (typeof YT !== 'undefined' && YT.loaded) {
+        apiReady = true;
+        initializePlayer();
+    } else {
+        setTimeout(checkYouTubeAPI, 100);
+    }
+}
+// Inicializar reproductor
+function initializePlayer() {
+    if (youtubePlayer || !apiReady) return;
+    
+    try {
+        youtubePlayer = new YT.Player('youtube-player', {
+            height: '100%',
+            width: '100%',
+            videoId: YOUTUBE_VIDEO_ID,
+            playerVars: {
+                'playsinline': 1,
+                'rel': 0,
+                'modestbranding': 1,
+                'controls': 1
+            },
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange,
+                'onError': onPlayerError
+            }
+        });
+        console.log('✅ Reproductor inicializado');
+    } catch (error) {
+        console.error('❌ Error:', error);
+        setTimeout(initializePlayer, 1000);
+    }
+}
 
 // API de YouTube
 function onYouTubeIframeAPIReady() {
-    youtubePlayer = new YT.Player('youtube-player', {
-        height: '450',
-        width: '800',
-        videoId: YOUTUBE_VIDEO_ID,
-        playerVars: {
-            'playsinline': 1,
-            'rel': 0,
-            'modestbranding': 1,
-            'controls': 1
-        },
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
+    console.log('✅ API YouTube cargada');
+    apiReady = true;
+    initializePlayer();
+}
+
+// Verificar si ya está cargada
+if (typeof YT !== 'undefined' && YT.loaded) {
+    onYouTubeIframeAPIReady();
+} else {
+    checkYouTubeAPI();
+}
+
+function onPlayerReady(event) {
+    playerReady = true;
+    console.log('✅ Reproductor listo');
+    
+    if (videoMarcadoComoVisto) {
+        maxTimeReached = event.target.getDuration();
+    }
+}
+
+function onPlayerError(event) {
+    console.error('❌ Error reproductor:', event.data);
+    const mensajes = {
+        2: 'ID de video inválido',
+        5: 'Error HTML5 player',
+        100: 'Video no encontrado',
+        101: 'Video no permitido',
+        150: 'Video no permitido'
+    };
+    alert(mensajes[event.data] || 'Error al cargar video. Recarga la página.');
 }
 
 function onPlayerReady(event) {
@@ -390,16 +445,13 @@ function onPlayerReady(event) {
 }
 
 function onPlayerStateChange(event) {
-    console.log('Estado del player:', event.data);
-    
-    // YT.PlayerState.PLAYING = 1
-    if (event.data === YT.PlayerState.PLAYING && !videoMarcadoComoVisto) {
+    // Reproduciendo
+    if (event.data === 1 && !videoMarcadoComoVisto) {
         startProgressCheck();
     }
     
-    // YT.PlayerState.ENDED = 0
-    if (event.data === YT.PlayerState.ENDED) {
-        console.log('Video terminó');
+    // Video terminó
+    if (event.data === 0) {
         marcarVideoComoVisto();
     }
 }
@@ -417,29 +469,31 @@ function startProgressCheck() {
             return;
         }
         
-        const currentTime = youtubePlayer.getCurrentTime();
-        const duration = youtubePlayer.getDuration();
-        
-        // Actualizar tiempo máximo alcanzado
-        if (currentTime > maxTimeReached) {
-            maxTimeReached = currentTime;
+        try {
+            const currentTime = youtubePlayer.getCurrentTime();
+            const duration = youtubePlayer.getDuration();
+            
+            if (currentTime > maxTimeReached) {
+                maxTimeReached = currentTime;
+            }
+            
+            // No adelantar más de 5 segundos
+            if (currentTime > maxTimeReached + 5) {
+                youtubePlayer.seekTo(maxTimeReached, true);
+                alert('Debes ver el video completo');
+            }
+            
+            // 95% completado
+            const porcentaje = (currentTime / duration) * 100;
+            if (porcentaje >= 95) {
+                marcarVideoComoVisto();
+                clearInterval(progressInterval);
+                checkingProgress = false;
+            }
+        } catch (error) {
+            console.error('Error progress:', error);
         }
-        
-        // Verificar si intenta adelantar más de 5 segundos
-        if (currentTime > maxTimeReached + 5) {
-            youtubePlayer.seekTo(maxTimeReached, true);
-            mostrarMensaje('Debes ver el video completo antes de adelantar', 'error');
-        }
-        
-        // Verificar si completó el 95% del video
-        const porcentaje = (currentTime / duration) * 100;
-        if (porcentaje >= 95) {
-            marcarVideoComoVisto();
-            clearInterval(progressInterval);
-            checkingProgress = false;
-        }
-        
-    }, 1000); // Verificar cada segundo
+    }, 1000);
 }
 
 // Funciones del modal
@@ -472,31 +526,29 @@ function marcarVideoComoVisto() {
     if (videoMarcadoComoVisto) return;
 
     fetch(`{{ route('video.marcar-visto', $video->id) }}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                videoMarcadoComoVisto = true;
-                maxTimeReached = youtubePlayer ? youtubePlayer.getDuration() : 0; // Permitir navegación libre
-                
-                const pendingStatus = document.getElementById('pending-status');
-                const completedStatus = document.getElementById('completed-status');
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            videoMarcadoComoVisto = true;
+            maxTimeReached = youtubePlayer ? youtubePlayer.getDuration() : 0;
+            
+            const pendingStatus = document.getElementById('pending-status');
+            const completedStatus = document.getElementById('completed-status');
 
-                if (pendingStatus && completedStatus) {
-                    pendingStatus.classList.add('hidden');
-                    completedStatus.classList.remove('hidden');
-                }
+            if (pendingStatus) pendingStatus.classList.add('hidden');
+            if (completedStatus) completedStatus.classList.remove('hidden');
 
-                mostrarMensaje('¡Video completado exitosamente! 🎉', 'success');
-            }
-        })
-        .catch(error => console.error('Error:', error));
+            alert('¡Video completado! 🎉');
+        }
+    })
+    .catch(error => console.error('Error marcar video:', error));
 }
 
 // Función para mostrar mensajes

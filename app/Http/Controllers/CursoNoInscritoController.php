@@ -384,103 +384,57 @@ private function generarDiplomaAutomatico($curso, $totalVideos, $videosCompletad
     Log::info("=== INICIO GENERACIÓN DIPLOMA ===", [
         'usuario_id' => $usuarioId,
         'curso_id' => $curso->id,
-        'curso_titulo' => $curso->titulo,
-        'total_videos' => $totalVideos,
-        'videos_completados' => $videosCompletados
     ]);
 
-    // Verificar si ya existe el diploma
     $diplomaExistente = DB::selectOne("
         SELECT * FROM diplomas 
         WHERE usuario_id = ? AND curso_id = ?
     ", [$usuarioId, $curso->id]);
 
-    Log::info("Verificando diploma existente", [
-        'existe_registro' => !is_null($diplomaExistente),
-        'diploma_id' => $diplomaExistente ? $diplomaExistente->id : null
-    ]);
-
-    // Si ya existe y el archivo también existe, no hacer nada
     if ($diplomaExistente && Storage::disk('public')->exists($diplomaExistente->ruta_archivo)) {
-        Log::info("Diploma ya existe y archivo está disponible", [
-            'ruta_archivo' => $diplomaExistente->ruta_archivo
-        ]);
-        return true; // Ya existe
+        Log::info("Diploma ya existe");
+        return true;
     }
-
-    if ($diplomaExistente && !Storage::disk('public')->exists($diplomaExistente->ruta_archivo)) {
-        Log::warning("Diploma existe en BD pero archivo no encontrado", [
-            'ruta_archivo' => $diplomaExistente->ruta_archivo
+      $logoAbsolutePath = public_path('img/logo-senacit.png');
+        
+        Log::info("Ruta absoluta del logo", [
+            'ruta' => $logoAbsolutePath,
+            'existe' => file_exists($logoAbsolutePath)
         ]);
-    }
-
+        
+ 
     try {
         DB::beginTransaction();
-        Log::info("Iniciando transacción de BD");
         
-        // Generar código único
         $codigoDiploma = $this->generarCodigoDiploma($curso->id, $usuarioId);
-        Log::info("Código diploma generado", ['codigo' => $codigoDiploma]);
         
-        // Preparar datos para la vista template.blade.php
         $datosParaTemplate = [
-            'logo_base64' => $this->obtenerLogoBase64(),
             'estudiante_nombre' => Auth::user()->name,
             'curso_titulo' => $curso->titulo,
-            'instructor_nombre' => $curso->instructor_nombre,
-            'curso_descripcion' => $curso->descripcion ?? 'Curso de programación',
-            'total_videos' => $totalVideos,
-            'videos_completados' => $videosCompletados,
-          'fecha_completado' => $this->obtenerFechaCompletadoFormateada($curso->id, $usuarioId),
+            'instructor_nombre' => $curso->instructor_nombre ?? 'Instructor del Curso',
+            'fecha_completado' => $this->obtenerFechaCompletadoFormateada($curso->id, $usuarioId),
             'codigo_diploma' => $codigoDiploma,
-            'ano_actual' => \Carbon\Carbon::now()->year
+            'logo_path' => $logoAbsolutePath,
+    
+      
         ];
         
-        Log::info("Datos preparados para template", [
-            'estudiante' => $datosParaTemplate['estudiante_nombre'],
-            'fecha_completado' => $datosParaTemplate['fecha_completado'],
-            'tiene_logo' => !empty($datosParaTemplate['logo_base64'])
-        ]);
+        Log::info("Generando PDF vertical");
         
-        // Renderizar template y generar PDF
-        Log::info("Intentando renderizar template");
-        $html = view('diploma.template', $datosParaTemplate)->render();
-        Log::info("Template renderizado exitosamente", [
-            'html_length' => strlen($html)
-        ]);
+        // CONFIGURACIÓN VERTICAL (portrait) - MÁS ESTABLE
+   $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('diploma.template', $datosParaTemplate)
+            ->setPaper('a4', 'portrait') // VERTICAL
+            ->setOption('isRemoteEnabled', true);
+        $pdfContent = $pdf->output();
         
-        Log::info("Intentando generar PDF con Browsershot");
-        $pdf = \Spatie\Browsershot\Browsershot::html($html)
-            ->waitUntilNetworkIdle()
-            ->paperSize(297, 210, 'mm')
-            ->margins(0, 0, 0, 0)
-            ->scale(1.0)
-            ->pdf();
-        
-        Log::info("PDF generado exitosamente", [
-            'pdf_size' => strlen($pdf)
-        ]);
+        Log::info("PDF generado", ['size' => strlen($pdfContent)]);
 
-        // Crear nombre y ruta del archivo
         $nombreArchivo = $this->generarNombreArchivo($curso->titulo, Auth::user()->name, $codigoDiploma);
         $rutaArchivo = 'diplomas/' . $usuarioId . '/' . $nombreArchivo;
         
-        Log::info("Rutas de archivo definidas", [
-            'nombre_archivo' => $nombreArchivo,
-            'ruta_archivo' => $rutaArchivo
-        ]);
+        Storage::disk('public')->put($rutaArchivo, $pdfContent);
         
-        // Guardar archivo
-        Storage::disk('public')->put($rutaArchivo, $pdf);
-        Log::info("Archivo guardado en storage", [
-            'ruta' => $rutaArchivo,
-            'existe' => Storage::disk('public')->exists($rutaArchivo)
-        ]);
-        
-        // Guardar o actualizar registro en BD
         if ($diplomaExistente) {
-            Log::info("Actualizando registro existente");
-            // Actualizar registro existente
             DB::update("
                 UPDATE diplomas 
                 SET ruta_archivo = ?, nombre_archivo = ?, codigo_diploma = ?, 
@@ -493,17 +447,13 @@ private function generarDiplomaAutomatico($curso, $totalVideos, $videosCompletad
                 json_encode([
                     'titulo' => $curso->titulo,
                     'instructor_nombre' => $curso->instructor_nombre,
-                    'descripcion' => $curso->descripcion,
                     'total_videos' => $totalVideos,
                     'videos_completados' => $videosCompletados
                 ]),
                 now(),
                 $diplomaExistente->id
             ]);
-            Log::info("Registro actualizado", ['diploma_id' => $diplomaExistente->id]);
         } else {
-            Log::info("Creando nuevo registro");
-            // Crear nuevo registro
             DB::insert("
                 INSERT INTO diplomas (usuario_id, curso_id, codigo_diploma, ruta_archivo, 
                                     nombre_archivo, fecha_completado, datos_curso, estado, 
@@ -519,7 +469,6 @@ private function generarDiplomaAutomatico($curso, $totalVideos, $videosCompletad
                 json_encode([
                     'titulo' => $curso->titulo,
                     'instructor_nombre' => $curso->instructor_nombre,
-                    'descripcion' => $curso->descripcion,
                     'total_videos' => $totalVideos,
                     'videos_completados' => $videosCompletados
                 ]),
@@ -527,28 +476,23 @@ private function generarDiplomaAutomatico($curso, $totalVideos, $videosCompletad
                 now(),
                 now()
             ]);
-            Log::info("Nuevo registro creado");
         }
 
         DB::commit();
-        Log::info("Transacción confirmada - Diploma generado exitosamente");
-        return true; // Diploma generado exitosamente
+        Log::info("Diploma generado exitosamente");
+        return true;
         
     } catch (\Exception $e) {
         DB::rollBack();
-        Log::error("ERROR CRÍTICO al generar diploma", [
+        Log::error("ERROR al generar diploma", [
             'error' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
         ]);
         
-        // Limpiar archivo si se creó
         if (isset($rutaArchivo) && Storage::disk('public')->exists($rutaArchivo)) {
             Storage::disk('public')->delete($rutaArchivo);
-            Log::info("Archivo limpiado tras error", ['ruta' => $rutaArchivo]);
         }
         
-        return false; // Error al generar
+        return false;
     }
 }
 

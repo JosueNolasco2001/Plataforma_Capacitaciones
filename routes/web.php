@@ -7,94 +7,67 @@ use App\Http\Controllers\DiplomaController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PuppeteerTestController;
 use App\Http\Controllers\ExamenController;
-
-
 use App\Http\Controllers\Auth\CustomEmailVerificationController;
 
+// Rutas públicas
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// Rutas de verificación de email
 Route::post('/email/custom-verification-notification', [CustomEmailVerificationController::class, 'send'])
     ->middleware('auth')
     ->name('custom.verification.send');
-    
-Route::get('/', function () {
-   return view('welcome');
- });
-// Route::get('/cursos', function () {
-//     return view('cursos');
-// });
 
-// Route::get('/curso/videos', function () {
-//     return view('curso-x-videos');
-// })->name('curso.videos');
-
-// Route::get('/curso/x/videos/x', function () {
-//     return view('curso-x-video-x');
-// })->name('curso.videos.x');
-
-// Route::get('/buscar/x/video', function () {
-//     return view('buscar-video');
-// })->name('buscar.video');
-
-
-
-
+// Rutas para usuarios autenticados (sin verificación de admin)
 Route::middleware(['auth'])->group(function () {
-  Route::get('/diploma/{cursoId}/ver', [DiplomaController::class, 'verDiplomaPorCurso'])
-    ->name('diploma.ver.directo');
-Route::get('/diploma/{cursoId}/descargar', [DiplomaController::class, 'descargarDiplomaPorCurso'])
-    ->name('diploma.descargar.directo');
+    Route::get('/diploma/{cursoId}/ver', [DiplomaController::class, 'verDiplomaPorCurso'])
+        ->name('diploma.ver.directo');
+    Route::get('/diploma/{cursoId}/descargar', [DiplomaController::class, 'descargarDiplomaPorCurso'])
+        ->name('diploma.descargar.directo');
 });
 
-
-
-  
-
-//RUTAS ADMIN
-
-
- Route::middleware([ 'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified', 'admin'])->group(function () {
-    Route::get('/agregar-video', [AdminController::class, 'agregarVideo'])->name('agregar.video');
-    Route::post('/store-course', [AdminController::class, 'storeCourse'])->name('store.course');
-});
-
+// Rutas con autenticación completa (Sanctum + Jetstream + Verified)
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+    
+    // Dashboard
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
-Route::get('/cursos/disponibles/{id}', [CursoNoInscritoController::class, 'show']);
-Route::get('/homepage', [CursoNoInscritoController::class, 'mostrarCursosDisponibles'])->name('cursos.disponibles');
-Route::get('/curso/{id}/videos', [CursoNoInscritoController::class, 'mostrarVideos'])->name('curso.videos');
-Route::get('/curso/videos/{id}', [VideoController::class, 'mostrar'])->name('video.mostrar');
-Route::post('/video/{id}/comentario', [VideoController::class, 'agregarComentario'])->name('video.comentario');
-Route::post('/comentario/{id}/respuesta', [VideoController::class, 'agregarRespuesta'])->name('comentario.respuesta');
+    // Gestión de cursos
+    Route::get('/homepage', [CursoNoInscritoController::class, 'mostrarCursosDisponibles'])->name('cursos.disponibles');
+    Route::get('/cursos/disponibles/{id}', [CursoNoInscritoController::class, 'show']);
+    Route::get('/mis-cursos', [CursoNoInscritoController::class, 'misCursos'])->name('cursos.mis-cursos');
+    Route::get('/cursos-completados', [CursoNoInscritoController::class, 'cursosCompletados'])->name('cursos.completados');
+    Route::get('/buscar-cursos', [CursoNoInscritoController::class, 'buscarCursos'])->name('cursos.buscar');
+    Route::post('/curso/{id}/suscribirse', [CursoNoInscritoController::class, 'suscribirse'])->name('curso.suscribirse');
 
-Route::post('/curso/{id}/suscribirse', [CursoNoInscritoController::class, 'suscribirse'])->name('curso.suscribirse');
+    // Gestión de videos
+    Route::get('/curso/{id}/videos', [CursoNoInscritoController::class, 'mostrarVideos'])->name('curso.videos');
+    Route::get('/curso/videos/{id}', [VideoController::class, 'mostrar'])->name('video.mostrar');
+    Route::post('/video/{id}/marcar-visto', [VideoController::class, 'marcarComoVisto'])->name('video.marcar-visto');
 
-Route::post('/video/{id}/marcar-visto', [VideoController::class, 'marcarComoVisto'])->name('video.marcar-visto');
+    // Comentarios y respuestas
+    Route::post('/video/{id}/comentario', [VideoController::class, 'agregarComentario'])->name('video.comentario');
+    Route::post('/comentario/{id}/respuesta', [VideoController::class, 'agregarRespuesta'])->name('comentario.respuesta');
 
-Route::get('/mis-cursos', [CursoNoInscritoController::class, 'misCursos'])->name('cursos.mis-cursos');
-Route::get('/cursos-completados', [CursoNoInscritoController::class, 'cursosCompletados'])->name('cursos.completados');
-Route::get('/buscar-cursos', [CursoNoInscritoController::class, 'buscarCursos'])->name('cursos.buscar');
-
-
+    // Exámenes
     Route::get('/examenes/{id}/tomar', [ExamenController::class, 'tomarExamen'])->name('examenes.tomar');
     Route::post('/examenes/{id}/guardar', [ExamenController::class, 'guardarExamen'])->name('examenes.guardar');
     Route::get('/examenes/{id}/continuar', [ExamenController::class, 'continuarExamen'])->name('examenes.continuar');
     Route::get('/examenes/{id}/resultado', [ExamenController::class, 'verResultado'])->name('examenes.resultado');
 
+    // Testing
+    Route::get('/test-puppeteer', [PuppeteerTestController::class, 'test']);
 
-// En routes/web.php
-Route::get('/test-puppeteer', [PuppeteerTestController::class, 'test']);
-// En tu web.php
-
-
-
-
-
+    // Rutas de administrador (subgrupo con middleware adicional)
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/agregar-video', [AdminController::class, 'agregarVideo'])->name('agregar.video');
+        Route::post('/store-course', [AdminController::class, 'storeCourse'])->name('store.course');
+    });
 });
